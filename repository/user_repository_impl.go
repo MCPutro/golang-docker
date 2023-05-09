@@ -14,15 +14,18 @@ func NewUserRepositoryImpl() UserRepository {
 	return &userRepositoryImpl{}
 }
 
-func (u *userRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, newUser *model.User) error {
-	SQL := `INSERT INTO public."users" (username, fullname, password) VALUES ( $1, $2, $3);`
+func (u *userRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, newUser *model.User) (*model.User, error) {
+	SQL := `INSERT INTO public."users" (username, fullname, password) VALUES ( $1, $2, $3) RETURNING id;`
 
-	_, err := tx.ExecContext(ctx, SQL, newUser.Username, newUser.FullName, newUser.Password)
+	//_, err := tx.ExecContext(ctx, SQL, newUser.Username, newUser.FullName, newUser.Password)
+	var id int
+	err := tx.QueryRowContext(ctx, SQL, newUser.Username, newUser.FullName, newUser.Password).Scan(&id)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	newUser.Id = id
 
-	return nil
+	return newUser, nil
 }
 
 func (u *userRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]*model.User, error) {

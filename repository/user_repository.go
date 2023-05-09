@@ -9,7 +9,7 @@ import (
 //mendefinisikan func yg akan digunakan untuk oleh UserRepository
 type UserRepository interface {
 	//untuk menyimpan data user baru
-	Save(ctx context.Context, tx *sql.Tx, newUser *model.User) error
+	Save(ctx context.Context, tx *sql.Tx, newUser *model.User) (*model.User, error)
 
 	//menampilan seluruh data user yang sudah terdaftar
 	FindAll(ctx context.Context, tx *sql.Tx) ([]*model.User, error)

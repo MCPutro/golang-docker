@@ -39,6 +39,8 @@ func TestSaveUser(t *testing.T) {
 		Password: "asd123",
 	}
 
+	expectedId := 50
+
 	//create database mock
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -47,30 +49,32 @@ func TestSaveUser(t *testing.T) {
 	defer db.Close()
 
 	mock.ExpectBegin()
-
-	// expect insert query
-	mock.ExpectExec(`INSERT INTO public."users"`).
+	mock.ExpectQuery(`INSERT INTO public."users" (.+) RETURNING id`).
 		WithArgs(newUser.Username, newUser.FullName, newUser.Password).
-		WillReturnResult(sqlmock.NewResult(1, 1))
-
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 	mock.ExpectCommit()
 
 	//membuat Database transaction
 	tx, err := db.Begin()
 
 	//call save func from UserRepository
-	err1 := userRepository.Save(ctx, tx, &newUser)
+	user, err1 := userRepository.Save(ctx, tx, &newUser)
 
 	if err1 != nil {
 		tx.Rollback()
+		log.Println("rollback", err1)
 	} else {
 		tx.Commit()
+		log.Println("commit")
 	}
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
+
+	assert.NoError(t, err1)
+	assert.Equal(t, expectedId, user.Id)
 
 }
 
