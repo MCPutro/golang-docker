@@ -120,3 +120,7 @@ func TestServiceUpdateUser_Negative(t *testing.T) {
 	assert.Nil(t, resp)
 
 }
+
+func TestGetAllUser(t *testing.T) {
+
+}
