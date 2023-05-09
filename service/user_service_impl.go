@@ -27,10 +27,10 @@ func (u *userServiceImpl) Create(ctx context.Context, req *web.UserCreateRequest
 	defer func() {
 		if err != nil {
 			tx.Rollback()
-			log.Println("Commit")
+			log.Println("Rollback")
 		} else {
 			tx.Commit()
-			log.Println("Rollback")
+			log.Println("Commit")
 		}
 	}()
 
