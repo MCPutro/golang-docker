@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/MCPutro/golang-docker/model"
+	"github.com/MCPutro/golang-docker/model/web"
 	"github.com/MCPutro/golang-docker/repository"
 	"log"
 )
@@ -17,7 +18,7 @@ func NewUserService(repo repository.UserRepository, db *sql.DB) UserService {
 	return &userServiceImpl{repo: repo, db: db}
 }
 
-func (u *userServiceImpl) Create(ctx context.Context, req *model.User) (*model.User, error) {
+func (u *userServiceImpl) Create(ctx context.Context, req *web.UserCreateRequest) (*model.User, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -33,13 +34,19 @@ func (u *userServiceImpl) Create(ctx context.Context, req *model.User) (*model.U
 		}
 	}()
 
+	message := &model.User{
+		Username: req.Username,
+		FullName: req.FullName,
+		Password: req.Password,
+	}
+
 	//call service
-	err = u.repo.Save(ctx, tx, req)
+	message, err = u.repo.Save(ctx, tx, message)
 
 	if err != nil {
 		return nil, err
 	} else {
-		return nil, err
+		return message, nil
 	}
 }
 
