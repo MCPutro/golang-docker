@@ -51,8 +51,29 @@ func (u *userServiceImpl) Create(ctx context.Context, req *web.UserCreateRequest
 }
 
 func (u *userServiceImpl) Update(ctx context.Context, req *model.User) (*model.User, error) {
-	//TODO implement me
-	panic("implement me")
+	//Begin db transactional
+	tx, err := u.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			log.Println("Rollback")
+		} else {
+			tx.Commit()
+			log.Println("Commit")
+		}
+	}()
+
+	//call service
+	err = u.repo.Update(ctx, tx, req)
+
+	if err != nil {
+		return nil, err
+	} else {
+		return req, nil
+	}
 }
 
 func (u *userServiceImpl) GetALl(ctx context.Context) ([]*model.User, error) {
