@@ -10,7 +10,7 @@ import (
 type userRepositoryImpl struct {
 }
 
-func NewUserRepositoryImpl() UserRepository {
+func NewUserRepository() UserRepository {
 	return &userRepositoryImpl{}
 }
 

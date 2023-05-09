@@ -31,7 +31,7 @@ func TestSaveUser(t *testing.T) {
 
 	ctx := context.Background()
 
-	userRepository := NewUserRepositoryImpl()
+	userRepository := NewUserRepository()
 
 	newUser := model.User{
 		Username: "kuro",
@@ -81,7 +81,7 @@ func TestSaveUser(t *testing.T) {
 func TestFindAll(t *testing.T) {
 	ctx := context.Background()
 
-	userRepository := NewUserRepositoryImpl()
+	userRepository := NewUserRepository()
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -130,7 +130,7 @@ func TestFindAll(t *testing.T) {
 func TestFindByID(t *testing.T) {
 	ctx := context.Background()
 
-	userRepository := NewUserRepositoryImpl()
+	userRepository := NewUserRepository()
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -182,7 +182,7 @@ func TestFindByID(t *testing.T) {
 func TestFindByUsername(t *testing.T) {
 	ctx := context.Background()
 
-	userRepository := NewUserRepositoryImpl()
+	userRepository := NewUserRepository()
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -259,7 +259,7 @@ func TestUpdate(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	userRepository := NewUserRepositoryImpl()
+	userRepository := NewUserRepository()
 	err = userRepository.Update(context.Background(), tx, &user)
 
 	if err != nil {
@@ -305,7 +305,7 @@ func TestDeleteUser_case_positive(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	userRepository := NewUserRepositoryImpl()
+	userRepository := NewUserRepository()
 
 	err = userRepository.Delete(context.Background(), tx, id)
 
@@ -347,7 +347,7 @@ func TestDeleteUser_case_negative(t *testing.T) {
 		t.Errorf("an error '%s' was not expected when begin database transactional", err)
 	}
 
-	userRepository := NewUserRepositoryImpl()
+	userRepository := NewUserRepository()
 	err = userRepository.Delete(ctx, tx, id)
 
 	if err != nil {
