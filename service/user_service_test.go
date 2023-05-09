@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func Test_service_user_create(t *testing.T) {
+func TestServiceUserCreate(t *testing.T) {
 
 	request := &web.UserCreateRequest{
 		Username: "unyil",
@@ -48,7 +48,7 @@ func Test_service_user_create(t *testing.T) {
 }
 
 //positive case
-func Test_service_update_user(t *testing.T) {
+func TestServiceUpdateUser_Positive(t *testing.T) {
 
 	request := &model.User{
 		Id:       12,
@@ -85,7 +85,7 @@ func Test_service_update_user(t *testing.T) {
 }
 
 //negative case
-func Test_service_update_user_negative(t *testing.T) {
+func TestServiceUpdateUser_Negative(t *testing.T) {
 
 	request := &model.User{
 		Id:       12,
