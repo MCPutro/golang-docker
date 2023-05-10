@@ -122,5 +122,211 @@ func TestServiceUpdateUser_Negative(t *testing.T) {
 }
 
 func TestGetAllUser(t *testing.T) {
+	ctx := context.Background()
+	users := []model.User{
+		{Id: 1, Username: "user1", FullName: "name1"},
+		{Id: 2, Username: "user2", FullName: "name2"},
+	}
 
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock db: %v", err)
+	}
+	defer db.Close()
+
+	userRepository := repository.NewUserRepository()
+	userService := NewUserService(userRepository, db)
+
+	//positive case
+	//set expect data
+	rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"})
+	for _, user := range users {
+		rows.AddRow(user.Id, user.Username, user.FullName, user.CreationDate)
+	}
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.creation_date from public."users" u`).
+		WillReturnRows(rows)
+	mock.ExpectCommit()
+
+	getALl, err := userService.GetAll(ctx)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	assert.Len(t, getALl, len(users))
+
+	//negative case
+	mock.ExpectBegin()
+	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.creation_date from public."users" u`).
+		WillReturnRows(sqlmock.NewRows([]string{"user_id"}))
+	mock.ExpectRollback()
+
+	list, err := userService.GetAll(ctx)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	assert.Error(t, err)
+	assert.Nil(t, list)
+}
+
+func TestGetUserById(t *testing.T) {
+	ctx := context.Background()
+	id := 1
+	users := []model.User{
+		{Id: 1, Username: "user1", FullName: "name1"},
+	}
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock db: %v", err)
+	}
+	defer db.Close()
+
+	userRepository := repository.NewUserRepository()
+	userService := NewUserService(userRepository, db)
+
+	//positive case
+	//set expect data
+	rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"})
+	for _, user := range users {
+		rows.AddRow(user.Id, user.Username, user.FullName, user.CreationDate)
+	}
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.creation_date from public."users" u`).
+		WithArgs(id).
+		WillReturnRows(rows)
+	mock.ExpectCommit()
+
+	user, err1 := userService.GetById(ctx, id)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	assert.NoError(t, err1)
+	assert.Equal(t, user.Id, 1)
+
+	//negative case
+	mock.ExpectBegin()
+	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.creation_date from public."users" u`).
+		WillReturnRows(sqlmock.NewRows([]string{"user_id"}))
+	mock.ExpectRollback()
+
+	list, err2 := userService.GetAll(ctx)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	assert.Error(t, err2)
+	assert.Nil(t, list)
+}
+
+func TestGetUserByUsername(t *testing.T) {
+	ctx := context.Background()
+	username := "user1"
+	users := []model.User{
+		{Id: 1, Username: "user1", FullName: "name1"},
+	}
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock db: %v", err)
+	}
+	defer db.Close()
+
+	userRepository := repository.NewUserRepository()
+	userService := NewUserService(userRepository, db)
+
+	//positive case
+	//set expect data
+	rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"})
+	for _, user := range users {
+		rows.AddRow(user.Id, user.Username, user.FullName, user.CreationDate)
+	}
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.creation_date from public."users" u`).
+		WithArgs(username).
+		WillReturnRows(rows)
+	mock.ExpectCommit()
+
+	user, err1 := userService.GetByUsername(ctx, username)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	assert.NoError(t, err1)
+	assert.Equal(t, user.Id, 1)
+
+	//negative case
+	mock.ExpectBegin()
+	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.creation_date from public."users" u`).
+		WillReturnRows(sqlmock.NewRows([]string{"user_id"}))
+	mock.ExpectRollback()
+
+	list, err2 := userService.GetAll(ctx)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	assert.Error(t, err2)
+	assert.Nil(t, list)
+}
+
+func TestDeleteUser(t *testing.T) {
+	ctx := context.Background()
+	id := 1
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock db: %v", err)
+	}
+	defer db.Close()
+
+	userRepository := repository.NewUserRepository()
+	userService := NewUserService(userRepository, db)
+
+	//positive case
+	mock.ExpectBegin()
+	mock.ExpectExec(`DELETE FROM public."users"`).
+		WithArgs(id).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+	mock.ExpectCommit()
+
+	err1 := userService.Remove(ctx, id)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+	assert.NoError(t, err1)
+
+	//negative case
+	mock.ExpectBegin()
+	mock.ExpectExec(`DELETE FROM public."users"`).
+		WithArgs(id).
+		WillReturnResult(sqlmock.NewResult(0, 0))
+	mock.ExpectRollback()
+
+	err2 := userService.Remove(ctx, id)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+	assert.Error(t, err2)
 }

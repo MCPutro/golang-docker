@@ -64,7 +64,7 @@ func (u *userServiceImpl) Update(ctx context.Context, req *model.User) (*model.U
 	}
 }
 
-func (u *userServiceImpl) GetALl(ctx context.Context) ([]*model.User, error) {
+func (u *userServiceImpl) GetAll(ctx context.Context) ([]*model.User, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
