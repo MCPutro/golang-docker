@@ -3,7 +3,7 @@ package model
 type User struct {
 	Id           int    `json:"id"`
 	Username     string `json:"username"`
-	FullName     string `json:"full_name"`
+	FullName     string `json:"fullname"`
 	Password     string `json:"password,omitempty"`
-	CreationDate string `json:"creation_date"`
+	CreationDate string `json:"creation_date,omitempty"`
 }
