@@ -45,6 +45,9 @@ func (u *userRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]*model.
 		users = append(users, &temp)
 	}
 
+	if len(users) == 0 {
+		return nil, errors.New("no data found")
+	}
 	return users, nil
 }
 
