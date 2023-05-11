@@ -124,7 +124,7 @@ func (u *userServiceImpl) Login(ctx context.Context, req *web.UserCreateRequest)
 	}
 
 	//validation password
-	if util.Compare(req.Password, findByUsername.Password) {
+	if util.ComparePassword(req.Password, findByUsername.Password) {
 		return findByUsername, nil
 	}
 
