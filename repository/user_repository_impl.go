@@ -90,9 +90,9 @@ func (u *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, Use
 }
 
 func (u *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, newUser *model.User) error {
-	SQL := `UPDATE public."users" SET fullname = $2, password = $3 WHERE id = $1;`
+	SQL := `UPDATE public."users" SET fullname = $2, password = $3, username = $4 WHERE user_id = $1;`
 
-	result, err := tx.ExecContext(ctx, SQL, newUser.Id, newUser.FullName, newUser.Password)
+	result, err := tx.ExecContext(ctx, SQL, newUser.Id, newUser.FullName, newUser.Password, newUser.Username)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (u *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, newUser *mo
 }
 
 func (u *userRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, Id int) error {
-	SQL := `DELETE FROM public."users" WHERE id = $1;`
+	SQL := `DELETE FROM public."users" WHERE user_id = $1;`
 
 	result, err := tx.ExecContext(ctx, SQL, Id)
 	if err != nil {

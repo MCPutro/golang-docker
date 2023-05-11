@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/MCPutro/golang-docker/model"
 	"github.com/MCPutro/golang-docker/model/web"
 	"github.com/MCPutro/golang-docker/repository"
@@ -61,7 +60,7 @@ func (u *userServiceImpl) Registration(ctx context.Context, req *web.UserCreateR
 	}
 }
 
-func (u *userServiceImpl) Update(ctx context.Context, req *model.User) (*model.User, error) {
+func (u *userServiceImpl) Update(ctx context.Context, req *model.User) (*web.UserResponse, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -69,15 +68,24 @@ func (u *userServiceImpl) Update(ctx context.Context, req *model.User) (*model.U
 	}
 	defer func() { util.CommitOrRollback(err, tx) }()
 
+	//hash password
+	password, err := util.EncryptPassword(req.Password)
+	if err != nil {
+		return nil, err
+	}
+	req.Password = password
+
 	//call service
 	err = u.repo.Update(ctx, tx, req)
-
-	fmt.Println(">>", err)
 
 	if err != nil {
 		return nil, err
 	} else {
-		return req, nil
+		return &web.UserResponse{
+			Id:       req.Id,
+			Username: req.Username,
+			Fullname: req.FullName,
+		}, nil
 	}
 }
 
