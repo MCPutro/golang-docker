@@ -15,7 +15,7 @@ func NewUserRepository() UserRepository {
 }
 
 func (u *userRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, newUser *model.User) (*model.User, error) {
-	SQL := `INSERT INTO public."users" (username, fullname, password) VALUES ( $1, $2, $3) RETURNING id;`
+	SQL := `INSERT INTO public."users" (username, fullname, password) VALUES ( $1, $2, $3) RETURNING user_id;`
 
 	//_, err := tx.ExecContext(ctx, SQL, newUser.Username, newUser.FullName, newUser.Password)
 	var id int
@@ -71,7 +71,7 @@ func (u *userRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, Id int) (
 }
 
 func (u *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, Username string) (*model.User, error) {
-	SQL := `select u.user_id, u.username, u.fullname, u.creation_date from public."users" u where u.username = $1;`
+	SQL := `select u.user_id, u.username, u.fullname, u.password, u.creation_date from public."users" u where u.username = $1;`
 
 	row, err := tx.QueryContext(ctx, SQL, Username)
 	if err != nil {
@@ -80,7 +80,7 @@ func (u *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, Use
 
 	if row.Next() {
 		var temp model.User
-		if err = row.Scan(&temp.Id, &temp.Username, &temp.FullName, &temp.CreationDate); err != nil {
+		if err = row.Scan(&temp.Id, &temp.Username, &temp.FullName, &temp.Password, &temp.CreationDate); err != nil {
 			return nil, err
 		}
 		return &temp, nil
