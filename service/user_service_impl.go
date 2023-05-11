@@ -28,10 +28,15 @@ func (u *userServiceImpl) Create(ctx context.Context, req *web.UserCreateRequest
 	}
 	defer func() { util.CommitOrRollback(err, tx) }()
 
+	password, err := util.EncryptPassword(req.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	message := &model.User{
 		Username: req.Username,
 		FullName: req.FullName,
-		Password: req.Password,
+		Password: password,
 	}
 
 	//call service
@@ -103,7 +108,7 @@ func (u *userServiceImpl) GetById(ctx context.Context, id int) (*model.User, err
 	return findByID, nil
 }
 
-func (u *userServiceImpl) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+func (u *userServiceImpl) Login(ctx context.Context, req *web.UserCreateRequest) (*model.User, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -112,13 +117,18 @@ func (u *userServiceImpl) GetByUsername(ctx context.Context, username string) (*
 	defer func() { util.CommitOrRollback(err, tx) }()
 
 	//call service
-	findByUsername, err := u.repo.FindByUsername(ctx, tx, username)
+	findByUsername, err := u.repo.FindByUsername(ctx, tx, req.Username)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return findByUsername, nil
+	//validation password
+	if util.Compare(req.Password, findByUsername.Password) {
+		return findByUsername, nil
+	}
+
+	return nil, errors.New("username and password not match")
 }
 
 func (u *userServiceImpl) Remove(ctx context.Context, id int) error {

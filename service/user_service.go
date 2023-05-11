@@ -11,6 +11,6 @@ type UserService interface {
 	Update(ctx context.Context, req *model.User) (*model.User, error)
 	GetAll(ctx context.Context) ([]*model.User, error)
 	GetById(ctx context.Context, id int) (*model.User, error)
-	GetByUsername(ctx context.Context, username string) (*model.User, error)
+	Login(ctx context.Context, req *web.UserCreateRequest) (*model.User, error)
 	Remove(ctx context.Context, id int) error
 }
