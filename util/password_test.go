@@ -16,11 +16,11 @@ func TestName(t *testing.T) {
 		t.Errorf("Hashed password is empty")
 	}
 
-	if !Compare(password, hashedPassword) {
+	if !ComparePassword(password, hashedPassword) {
 		t.Errorf("Password and hash comparison failed")
 	}
 
-	if Compare("132456789", hashedPassword) {
+	if ComparePassword("132456789", hashedPassword) {
 		t.Errorf("Incorrect password was matched")
 	}
 }
