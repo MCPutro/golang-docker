@@ -20,7 +20,7 @@ func NewUserService(repo repository.UserRepository, db *sql.DB) UserService {
 	return &userServiceImpl{repo: repo, db: db}
 }
 
-func (u *userServiceImpl) Create(ctx context.Context, req *web.UserCreateRequest) (*model.User, error) {
+func (u *userServiceImpl) Registration(ctx context.Context, req *web.UserCreateRequest) (*web.UserResponse, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -45,7 +45,19 @@ func (u *userServiceImpl) Create(ctx context.Context, req *web.UserCreateRequest
 	if err != nil {
 		return nil, err
 	} else {
-		return message, nil
+		//generate token
+		token, err := util.GenerateToken(message)
+		if err != nil {
+			return nil, err
+		}
+
+		return &web.UserResponse{
+			Id:           message.Id,
+			Username:     message.Username,
+			Fullname:     message.FullName,
+			Token:        token,
+			CreationDate: message.CreationDate,
+		}, nil
 	}
 }
 
@@ -108,7 +120,7 @@ func (u *userServiceImpl) GetById(ctx context.Context, id int) (*model.User, err
 	return findByID, nil
 }
 
-func (u *userServiceImpl) Login(ctx context.Context, req *web.UserCreateRequest) (*model.User, error) {
+func (u *userServiceImpl) Login(ctx context.Context, req *web.UserCreateRequest) (*web.UserResponse, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -125,7 +137,19 @@ func (u *userServiceImpl) Login(ctx context.Context, req *web.UserCreateRequest)
 
 	//validation password
 	if util.ComparePassword(req.Password, findByUsername.Password) {
-		return findByUsername, nil
+		//generate token
+		token, err := util.GenerateToken(findByUsername)
+		if err != nil {
+			return nil, err
+		}
+
+		return &web.UserResponse{
+			Id:           findByUsername.Id,
+			Username:     findByUsername.Username,
+			Fullname:     findByUsername.FullName,
+			Token:        token,
+			CreationDate: findByUsername.CreationDate,
+		}, nil
 	}
 
 	return nil, errors.New("username and password not match")
