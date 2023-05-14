@@ -12,6 +12,7 @@ var (
 	DB_Username = mustGetEnv("POSTGRES_USER")
 	DB_Name     = mustGetEnv("POSTGRES_DB")
 	DB_Port     = mustGetEnv("POSTGRES_DB_PORT")
+	App_Port    = mustGetEnv("APP_PORT")
 )
 
 func mustGetEnv(k string) string {
