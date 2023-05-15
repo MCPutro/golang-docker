@@ -30,36 +30,3 @@ func mustGetEnv(k string) string {
 	log.Println("env", k, "is OK")
 	return v
 }
-
-//type config struct {
-//	DB_Host     string
-//	DB_Pass     string
-//	DB_Username string
-//	DB_Name     string
-//	DB_Port     string
-//}
-//
-//var cfg *config
-//var once sync.Once
-//
-//func Get() *config {
-//	/* load from file .env */
-//	err := godotenv.Load(".env")
-//	if err != nil {
-//		log.Fatal("can't load from .env error:", err)
-//		return nil
-//	}
-//
-//	once.Do(func() {
-//		cfg = &config{
-//			DB_Host:     os.Getenv("POSTGRES_HOSTNAME"),
-//			DB_Pass:     os.Getenv("POSTGRES_PASSWORD"),
-//			DB_Username: os.Getenv("POSTGRES_USER"),
-//			DB_Name:     os.Getenv("POSTGRES_DB"),
-//			DB_Port:     os.Getenv("POSTGRES_DB_PORT"),
-//		}
-//		fmt.Println("--test singleton--")
-//	})
-//
-//	return cfg
-//}

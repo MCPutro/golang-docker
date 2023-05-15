@@ -9,17 +9,7 @@ import (
 func NewRouter(userController controller.UserController) *fiber.App {
 	router := fiber.New()
 
-	//router.Get("/ping", func(ctx *fiber.Ctx) error {
-	//	return ctx.SendString("Pong")
-	//})
-	//router.Post("/login", userController.Login)
-	//
-	//secureRoutes := router.Group("/", middleware.AuthMiddleware())
-	//secureRoutes.Post("/registration", userController.Registration)
-	//secureRoutes.Get("/user", middleware.AuthMiddleware(), userController.ShowAllUser)
-	//secureRoutes.Get("/user/:uid", userController.ShowUser)
-	//secureRoutes.Patch("/user/:uid", userController.UpdateUser)
-	//secureRoutes.Delete("/user/:uid", userController.DeleteUser)
+	router.Use(middleware.ContentTypeMiddleware())
 
 	guestRoutes(router, userController)
 	secureRoutes(router, userController)
@@ -38,7 +28,7 @@ func secureRoutes(router *fiber.App, userController controller.UserController) {
 	secure.Post("/registration", userController.Registration)
 	secure.Get("/user", userController.ShowAllUser)
 	secure.Get("/user/:uid", userController.ShowUser)
-	secure.Patch("/user/:uid", userController.UpdateUser)
+	secure.Put("/user/:uid", userController.UpdateUser)
 	secure.Delete("/user/:uid", userController.DeleteUser)
 
 }
