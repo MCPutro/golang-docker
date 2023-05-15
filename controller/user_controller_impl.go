@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"github.com/MCPutro/golang-docker/model"
 	"github.com/MCPutro/golang-docker/model/web"
 	"github.com/MCPutro/golang-docker/service"
+	"github.com/MCPutro/golang-docker/util"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
@@ -21,91 +23,101 @@ func (u *userControllerImpl) Login(c *fiber.Ctx) error {
 	body := new(web.UserCreateRequest)
 
 	if err := c.BodyParser(&body); err != nil {
-		return c.SendString(err.Error())
+		return util.WriteToResponseBody(c, fiber.StatusBadRequest, "invalid request body", nil)
 	}
 
 	user, err := u.service.Login(c.UserContext(), body)
 	if err != nil {
-		return c.SendString(err.Error())
+		return util.WriteToResponseBody(c, fiber.StatusUnauthorized, "failed to login. "+err.Error(), nil)
 	}
 
-	return c.JSON(user)
+	//success message
+	return util.WriteToResponseBody(c, fiber.StatusOK, "success", user)
 }
 
 func (u *userControllerImpl) Registration(c *fiber.Ctx) error {
 	body := new(web.UserCreateRequest)
 
 	if err := c.BodyParser(&body); err != nil {
-		return c.SendString(err.Error())
+		return util.WriteToResponseBody(c, fiber.StatusBadRequest, "invalid request body", nil)
 	}
 
 	create, err := u.service.Registration(c.UserContext(), body)
 	if err != nil {
-		return c.SendString(err.Error())
+		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to registration. "+err.Error(), nil)
 	}
 
-	return c.JSON(create)
+	//success message
+	return util.WriteToResponseBody(c, fiber.StatusCreated, "success", create)
 }
 
 func (u *userControllerImpl) ShowAllUser(c *fiber.Ctx) error {
 	users, err := u.service.GetAll(c.UserContext())
 	if err != nil {
-		return c.SendString(err.Error())
+		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to get users data. "+err.Error(), nil)
 	}
 
-	return c.JSON(users)
+	//success message
+	return util.WriteToResponseBody(c, fiber.StatusOK, "success", users)
 }
 
 func (u *userControllerImpl) ShowUser(c *fiber.Ctx) error {
 	suid := c.Params("uid", "-1")
 	uid, err := strconv.Atoi(suid)
 	if err != nil {
-		return c.SendString(fmt.Sprintf("User ID %s not valid", suid))
+		return util.WriteToResponseBody(c, fiber.StatusBadRequest, fmt.Sprintf("user id %s is not valid.", suid), nil)
 	}
 
 	user, err := u.service.GetById(c.UserContext(), uid)
 	if err != nil {
-		return c.SendString(err.Error())
+		if errors.Is(err, util.ErrNotFound) {
+			return util.WriteToResponseBody(c, fiber.StatusNotFound, err.Error(), nil)
+		} else {
+			return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to get user data. "+err.Error(), nil)
+		}
 	}
 
-	return c.JSON(user)
+	//success message
+	return util.WriteToResponseBody(c, fiber.StatusOK, "success", user)
 }
 
 func (u *userControllerImpl) UpdateUser(c *fiber.Ctx) error {
-	suid := c.Params("uid", "-1")
-	uid, err := strconv.Atoi(suid)
-	if err != nil {
-		return c.SendString(fmt.Sprintf("User ID %s not valid", suid))
-	}
-
 	body := new(model.User)
 
 	if err := c.BodyParser(&body); err != nil {
-		return c.SendString(err.Error())
+		return util.WriteToResponseBody(c, fiber.StatusBadRequest, "invalid request body", nil)
 	}
+
+	suid := c.Params("uid", "")
+	uid, err := strconv.Atoi(suid)
+	if err != nil {
+		return util.WriteToResponseBody(c, fiber.StatusBadRequest, fmt.Sprintf("user id %s is not valid.", suid), nil)
+	}
+
 	body.Id = uid
 
 	update, err := u.service.Update(c.UserContext(), body)
 	if err != nil {
-		return c.SendString(err.Error())
+		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to update user. "+err.Error(), nil)
 	}
 
-	return c.JSON(update)
-
+	//success message
+	return util.WriteToResponseBody(c, fiber.StatusOK, "success", update)
 }
 
 func (u *userControllerImpl) DeleteUser(c *fiber.Ctx) error {
 	suid := c.Params("uid", "-1")
 	uid, err := strconv.Atoi(suid)
 	if err != nil {
-		return c.SendString(fmt.Sprintf("User ID %s not valid", suid))
+		return util.WriteToResponseBody(c, fiber.StatusBadRequest, fmt.Sprintf("user id %s is not valid.", suid), nil)
 	}
 
 	err = u.service.Remove(c.UserContext(), uid)
 
 	if err != nil {
-		return c.SendString(err.Error())
+		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to delete user. "+err.Error(), nil)
 	}
 
-	return c.SendString("berhasil hapus user dengan id : " + suid)
+	//success message
+	return util.WriteToResponseBody(c, fiber.StatusOK, "success", nil)
 }

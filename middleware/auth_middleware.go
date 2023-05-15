@@ -12,14 +12,13 @@ func AuthMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		auth := c.Get(fiber.HeaderAuthorization, "")
 		if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
-			return c.SendStatus(fiber.StatusUnauthorized)
+			return util.WriteToResponseBody(c, fiber.StatusUnauthorized, "unauthorized", nil)
 		}
 
 		//validation jwt
 		validateToken, err := util.ValidateToken(strings.ReplaceAll(auth, "Bearer ", ""))
 		if err != nil {
-			return c.Status(fiber.StatusUnauthorized).SendString(err.Error())
-
+			return util.WriteToResponseBody(c, fiber.StatusUnauthorized, "invalid token. "+err.Error(), nil)
 		}
 
 		if validateToken.Valid {

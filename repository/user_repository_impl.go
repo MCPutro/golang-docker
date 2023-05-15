@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"fmt"
 	"github.com/MCPutro/golang-docker/model"
+	"github.com/MCPutro/golang-docker/util"
 )
 
 type userRepositoryImpl struct {
@@ -46,7 +47,7 @@ func (u *userRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]*model.
 	}
 
 	if len(users) == 0 {
-		return nil, errors.New("no data found")
+		return nil, fmt.Errorf("%w", util.ErrNotFound)
 	}
 	return users, nil
 }
@@ -67,7 +68,7 @@ func (u *userRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, Id int) (
 		return &temp, nil
 	}
 
-	return nil, errors.New("no data found")
+	return nil, fmt.Errorf("user id %w", util.ErrNotFound)
 }
 
 func (u *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, Username string) (*model.User, error) {
@@ -86,7 +87,7 @@ func (u *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, Use
 		return &temp, nil
 	}
 
-	return nil, errors.New("no data found")
+	return nil, fmt.Errorf("username %w", util.ErrNotFound)
 }
 
 func (u *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, newUser *model.User) error {
@@ -105,7 +106,7 @@ func (u *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, newUser *mo
 	if affected > 0 {
 		return nil
 	} else {
-		return errors.New("no data found")
+		return fmt.Errorf("user id %w", util.ErrNotFound)
 	}
 
 }
@@ -126,6 +127,6 @@ func (u *userRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, Id int) err
 	if affected > 0 {
 		return nil
 	} else {
-		return errors.New("no data found")
+		return fmt.Errorf("user id %w", util.ErrNotFound)
 	}
 }

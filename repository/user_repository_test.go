@@ -4,28 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	conf "github.com/MCPutro/golang-docker/config"
 	"github.com/MCPutro/golang-docker/model"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"log"
-	"os"
 	"testing"
 	"time"
 )
-
-func setDatabase() {
-	if err := godotenv.Load("../.env"); err != nil {
-		log.Fatalln("Error loading .env file")
-		return
-	}
-
-	conf.DB_Host = os.Getenv("POSTGRES_HOSTNAME")
-	conf.DB_Pass = os.Getenv("POSTGRES_PASSWORD")
-	conf.DB_Username = os.Getenv("POSTGRES_USER")
-	conf.DB_Name = os.Getenv("POSTGRES_DB")
-	conf.DB_Port = os.Getenv("POSTGRES_DB_PORT")
-}
 
 func TestSaveUser(t *testing.T) {
 
@@ -49,7 +33,7 @@ func TestSaveUser(t *testing.T) {
 	defer db.Close()
 
 	mock.ExpectBegin()
-	mock.ExpectQuery(`INSERT INTO public."users" (.+) RETURNING id`).
+	mock.ExpectQuery(`INSERT INTO public."users" (.+) RETURNING user_id`).
 		WithArgs(newUser.Username, newUser.FullName, newUser.Password).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 	mock.ExpectCommit()
@@ -173,10 +157,10 @@ func TestFindByID(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 
-	//assert.NoError(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, findByID.Id, 1)
-	//assert.Equal(t, findByID.Username, "user1")
-	//assert.Equal(t, findByID.FullName, "name1")
+	assert.Equal(t, findByID.Username, "user1")
+	assert.Equal(t, findByID.FullName, "name1")
 }
 
 func TestFindByUsername(t *testing.T) {
@@ -196,13 +180,13 @@ func TestFindByUsername(t *testing.T) {
 	}
 
 	//set expect data
-	rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"})
+	rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "password", "u.creation_date"})
 	for _, user := range users {
-		rows.AddRow(user.Id, user.Username, user.FullName, user.CreationDate)
+		rows.AddRow(user.Id, user.Username, user.FullName, user.Password, user.CreationDate)
 	}
 
 	mock.ExpectBegin()
-	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.creation_date from public."users" u`).
+	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.password, u.creation_date from public."users" u`).
 		WithArgs(users[0].Username).
 		WillReturnRows(rows)
 	mock.ExpectCommit()
@@ -249,7 +233,7 @@ func TestUpdate(t *testing.T) {
 	//set mock
 	mock.ExpectBegin()
 	mock.ExpectExec(`UPDATE public."users"`).
-		WithArgs(user.Id, user.FullName, user.Password).
+		WithArgs(user.Id, user.FullName, user.Password, user.Username).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectCommit()
 

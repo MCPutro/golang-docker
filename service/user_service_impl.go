@@ -160,7 +160,7 @@ func (u *userServiceImpl) Login(ctx context.Context, req *web.UserCreateRequest)
 		}, nil
 	}
 
-	return nil, errors.New("username and password not match")
+	return nil, errors.New("password do not match")
 }
 
 func (u *userServiceImpl) Remove(ctx context.Context, id int) error {
