@@ -1,4 +1,4 @@
-package config
+package test
 
 import (
 	"github.com/joho/godotenv"
@@ -8,7 +8,7 @@ import (
 )
 
 func TestLoadEnvFromFile(t *testing.T) {
-	if err := godotenv.Load("../.env"); err != nil {
+	if err := godotenv.Load("../../.env"); err != nil {
 		t.Error("Error loading .env file")
 	}
 

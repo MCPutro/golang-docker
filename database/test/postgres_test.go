@@ -1,7 +1,8 @@
-package database
+package test
 
 import (
 	conf "github.com/MCPutro/golang-docker/config"
+	"github.com/MCPutro/golang-docker/database"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -11,7 +12,7 @@ import (
 
 func TestCallDatabase(t *testing.T) {
 	//load enviroment variable from .env file
-	if err := godotenv.Load("../.env"); err != nil {
+	if err := godotenv.Load("../../.env"); err != nil {
 		t.Error("Error loading .env file")
 	}
 
@@ -21,7 +22,7 @@ func TestCallDatabase(t *testing.T) {
 	conf.DB_Name = os.Getenv("POSTGRES_DB")
 	conf.DB_Port = os.Getenv("POSTGRES_DB_PORT")
 
-	db, err := InitDatabase()
+	db, err := database.InitDatabase()
 	if err != nil {
 		log.Fatalln(err)
 	}

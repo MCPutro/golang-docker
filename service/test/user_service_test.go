@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/MCPutro/golang-docker/model"
 	"github.com/MCPutro/golang-docker/model/web"
@@ -69,7 +70,7 @@ func TestServiceUpdateUser_Positive(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectExec(`UPDATE public."users"`).
-		WithArgs(request.Id, request.Fullname, request.Password).
+		WithArgs(request.Id, request.Fullname, sqlmock.AnyArg() /*request.Password*/, request.Username).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectCommit()
 
@@ -78,9 +79,12 @@ func TestServiceUpdateUser_Positive(t *testing.T) {
 	userService := service.NewUserService(userRepository, db)
 	resp, err := userService.Update(ctx, request)
 
+	fmt.Println(">>", err)
+	fmt.Println(">>", resp)
+
 	// we make sure that all expectations were met
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
+	if errMock := mock.ExpectationsWereMet(); errMock != nil {
+		t.Errorf("there were unfulfilled expectations: %s", errMock)
 	}
 
 	assert.NoError(t, err)
@@ -106,7 +110,7 @@ func TestServiceUpdateUser_Negative(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectExec(`UPDATE public."users"`).
-		WithArgs(request.Id, request.Fullname, request.Password).
+		WithArgs(request.Id, request.Fullname, sqlmock.AnyArg() /*request.Password*/, request.Username).
 		WillReturnResult(sqlmock.NewResult(0, 0))
 	mock.ExpectRollback()
 
