@@ -18,9 +18,9 @@ func NewUserRepository() UserRepository {
 func (u *userRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, newUser *model.User) (*model.User, error) {
 	SQL := `INSERT INTO public."users" (username, fullname, password) VALUES ( $1, $2, $3) RETURNING user_id;`
 
-	//_, err := tx.ExecContext(ctx, SQL, newUser.Username, newUser.FullName, newUser.Password)
+	//_, err := tx.ExecContext(ctx, SQL, newUser.Username, newUser.Fullname, newUser.Password)
 	var id int
-	err := tx.QueryRowContext(ctx, SQL, newUser.Username, newUser.FullName, newUser.Password).Scan(&id)
+	err := tx.QueryRowContext(ctx, SQL, newUser.Username, newUser.Fullname, newUser.Password).Scan(&id)
 	if err != nil {
 		return nil, err
 	}
@@ -36,11 +36,12 @@ func (u *userRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]*model.
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var users []*model.User
 	for rows.Next() {
 		var temp model.User
-		if err = rows.Scan(&temp.Id, &temp.Username, &temp.FullName, &temp.CreationDate); err != nil {
+		if err = rows.Scan(&temp.Id, &temp.Username, &temp.Fullname, &temp.CreationDate); err != nil {
 			return nil, err
 		}
 		users = append(users, &temp)
@@ -59,10 +60,11 @@ func (u *userRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, Id int) (
 	if err != nil {
 		return nil, err
 	}
+	defer row.Close()
 
 	if row.Next() {
 		var temp model.User
-		if err = row.Scan(&temp.Id, &temp.Username, &temp.FullName, &temp.CreationDate); err != nil {
+		if err = row.Scan(&temp.Id, &temp.Username, &temp.Fullname, &temp.CreationDate); err != nil {
 			return nil, err
 		}
 		return &temp, nil
@@ -78,10 +80,11 @@ func (u *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, Use
 	if err != nil {
 		return nil, err
 	}
+	defer row.Close()
 
 	if row.Next() {
 		var temp model.User
-		if err = row.Scan(&temp.Id, &temp.Username, &temp.FullName, &temp.Password, &temp.CreationDate); err != nil {
+		if err = row.Scan(&temp.Id, &temp.Username, &temp.Fullname, &temp.Password, &temp.CreationDate); err != nil {
 			return nil, err
 		}
 		return &temp, nil
@@ -93,7 +96,7 @@ func (u *userRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, Use
 func (u *userRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, newUser *model.User) error {
 	SQL := `UPDATE public."users" SET fullname = $2, password = $3, username = $4 WHERE user_id = $1;`
 
-	result, err := tx.ExecContext(ctx, SQL, newUser.Id, newUser.FullName, newUser.Password, newUser.Username)
+	result, err := tx.ExecContext(ctx, SQL, newUser.Id, newUser.Fullname, newUser.Password, newUser.Username)
 	if err != nil {
 		return err
 	}

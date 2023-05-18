@@ -1,12 +1,13 @@
-package util
+package test
 
 import (
+	"github.com/MCPutro/golang-docker/util"
 	"testing"
 )
 
-func TestName(t *testing.T) {
+func TestPasswordHash(t *testing.T) {
 	password := "1Abcdefgh"
-	hashedPassword, err := EncryptPassword(password)
+	hashedPassword, err := util.EncryptPassword(password)
 
 	if err != nil {
 		t.Errorf("Error hashing password: %s", err)
@@ -16,11 +17,11 @@ func TestName(t *testing.T) {
 		t.Errorf("Hashed password is empty")
 	}
 
-	if !ComparePassword(password, hashedPassword) {
+	if !util.ComparePassword(password, hashedPassword) {
 		t.Errorf("Password and hash comparison failed")
 	}
 
-	if ComparePassword("132456789", hashedPassword) {
+	if util.ComparePassword("132456789", hashedPassword) {
 		t.Errorf("Incorrect password was matched")
 	}
 }

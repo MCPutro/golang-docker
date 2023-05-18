@@ -28,11 +28,9 @@ func TestCallDatabase(t *testing.T) {
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatalf("gagal ping db, error : %s", err)
+		log.Fatalf("fail ping db, error : %s", err)
 
 	}
-
-	log.Fatalln("ssss")
 
 	assert.NoError(t, err)
 

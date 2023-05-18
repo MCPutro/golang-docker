@@ -28,6 +28,10 @@ func (u *userControllerImpl) Login(c *fiber.Ctx) error {
 
 	user, err := u.service.Login(c.UserContext(), body)
 	if err != nil {
+		if errors.Is(err, util.ErrNotFound) {
+			return util.WriteToResponseBody(c, fiber.StatusNotFound, "failed to login. "+err.Error(), nil)
+		}
+
 		return util.WriteToResponseBody(c, fiber.StatusUnauthorized, "failed to login. "+err.Error(), nil)
 	}
 
@@ -44,6 +48,10 @@ func (u *userControllerImpl) Registration(c *fiber.Ctx) error {
 
 	create, err := u.service.Registration(c.UserContext(), body)
 	if err != nil {
+		if errors.Is(err, util.ErrAlreadyUsed) {
+			return util.WriteToResponseBody(c, fiber.StatusUnprocessableEntity, "failed to registration. "+err.Error(), nil)
+		}
+
 		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to registration. "+err.Error(), nil)
 	}
 
@@ -72,9 +80,10 @@ func (u *userControllerImpl) ShowUser(c *fiber.Ctx) error {
 	if err != nil {
 		if errors.Is(err, util.ErrNotFound) {
 			return util.WriteToResponseBody(c, fiber.StatusNotFound, err.Error(), nil)
-		} else {
-			return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to get user data. "+err.Error(), nil)
 		}
+
+		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to get user data. "+err.Error(), nil)
+
 	}
 
 	//success message
@@ -98,6 +107,9 @@ func (u *userControllerImpl) UpdateUser(c *fiber.Ctx) error {
 
 	update, err := u.service.Update(c.UserContext(), body)
 	if err != nil {
+		if errors.Is(err, util.ErrNotFound) {
+			return util.WriteToResponseBody(c, fiber.StatusNotFound, "failed to update user. "+err.Error(), nil)
+		}
 		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to update user. "+err.Error(), nil)
 	}
 
@@ -115,6 +127,10 @@ func (u *userControllerImpl) DeleteUser(c *fiber.Ctx) error {
 	err = u.service.Remove(c.UserContext(), uid)
 
 	if err != nil {
+		if errors.Is(err, util.ErrNotFound) {
+			return util.WriteToResponseBody(c, fiber.StatusNotFound, "failed to delete user. "+err.Error(), nil)
+		}
+
 		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to delete user. "+err.Error(), nil)
 	}
 

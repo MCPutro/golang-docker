@@ -1,10 +1,11 @@
-package repository
+package test
 
 import (
 	"context"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/MCPutro/golang-docker/model"
+	"github.com/MCPutro/golang-docker/repository"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"
@@ -15,11 +16,11 @@ func TestSaveUser(t *testing.T) {
 
 	ctx := context.Background()
 
-	userRepository := NewUserRepository()
+	userRepository := repository.NewUserRepository()
 
 	newUser := model.User{
 		Username: "kuro",
-		FullName: "kurokami",
+		Fullname: "kurokami",
 		Password: "asd123",
 	}
 
@@ -34,7 +35,7 @@ func TestSaveUser(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectQuery(`INSERT INTO public."users" (.+) RETURNING user_id`).
-		WithArgs(newUser.Username, newUser.FullName, newUser.Password).
+		WithArgs(newUser.Username, newUser.Fullname, newUser.Password).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 	mock.ExpectCommit()
 
@@ -65,7 +66,7 @@ func TestSaveUser(t *testing.T) {
 func TestFindAll(t *testing.T) {
 	ctx := context.Background()
 
-	userRepository := NewUserRepository()
+	userRepository := repository.NewUserRepository()
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -74,14 +75,14 @@ func TestFindAll(t *testing.T) {
 	defer db.Close()
 
 	users := []model.User{
-		{Id: 1, Username: "user1", FullName: "name1", CreationDate: time.Now().String()},
-		{Id: 2, Username: "user2", FullName: "name2", CreationDate: time.Now().String()},
+		{Id: 1, Username: "user1", Fullname: "name1", CreationDate: time.Now().String()},
+		{Id: 2, Username: "user2", Fullname: "name2", CreationDate: time.Now().String()},
 	}
 
 	//set expect data
 	rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"})
 	for _, user := range users {
-		rows.AddRow(user.Id, user.Username, user.FullName, user.CreationDate)
+		rows.AddRow(user.Id, user.Username, user.Fullname, user.CreationDate)
 	}
 
 	mock.ExpectBegin()
@@ -114,7 +115,7 @@ func TestFindAll(t *testing.T) {
 func TestFindByID(t *testing.T) {
 	ctx := context.Background()
 
-	userRepository := NewUserRepository()
+	userRepository := repository.NewUserRepository()
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -124,13 +125,13 @@ func TestFindByID(t *testing.T) {
 
 	//mock data resp
 	users := []model.User{
-		{Id: 1, Username: "user1", FullName: "name1"},
+		{Id: 1, Username: "user1", Fullname: "name1"},
 	}
 
 	//set expect data
-	rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"})
+	rows := sqlmock.NewRows([]string{"user_id", "username", "Fullname", "u.creation_date"})
 	for _, user := range users {
-		rows.AddRow(user.Id, user.Username, user.FullName, user.CreationDate)
+		rows.AddRow(user.Id, user.Username, user.Fullname, user.CreationDate)
 	}
 
 	mock.ExpectBegin()
@@ -160,13 +161,13 @@ func TestFindByID(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, findByID.Id, 1)
 	assert.Equal(t, findByID.Username, "user1")
-	assert.Equal(t, findByID.FullName, "name1")
+	assert.Equal(t, findByID.Fullname, "name1")
 }
 
 func TestFindByUsername(t *testing.T) {
 	ctx := context.Background()
 
-	userRepository := NewUserRepository()
+	userRepository := repository.NewUserRepository()
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -176,13 +177,13 @@ func TestFindByUsername(t *testing.T) {
 
 	//mock data resp
 	users := []model.User{
-		{Id: 1, Username: "user1", FullName: "name1"},
+		{Id: 1, Username: "user1", Fullname: "name1"},
 	}
 
 	//set expect data
 	rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "password", "u.creation_date"})
 	for _, user := range users {
-		rows.AddRow(user.Id, user.Username, user.FullName, user.Password, user.CreationDate)
+		rows.AddRow(user.Id, user.Username, user.Fullname, user.Password, user.CreationDate)
 	}
 
 	mock.ExpectBegin()
@@ -211,14 +212,14 @@ func TestFindByUsername(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, findByUsername.Id, 1)
 	assert.Equal(t, findByUsername.Username, "user1")
-	assert.Equal(t, findByUsername.FullName, "name1")
+	assert.Equal(t, findByUsername.Fullname, "name1")
 }
 
 func TestUpdate(t *testing.T) {
 
 	user := model.User{
 		Id:       4,
-		FullName: "empat",
+		Fullname: "empat",
 		Password: "3mpat",
 	}
 
@@ -233,7 +234,7 @@ func TestUpdate(t *testing.T) {
 	//set mock
 	mock.ExpectBegin()
 	mock.ExpectExec(`UPDATE public."users"`).
-		WithArgs(user.Id, user.FullName, user.Password, user.Username).
+		WithArgs(user.Id, user.Fullname, user.Password, user.Username).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectCommit()
 
@@ -243,7 +244,7 @@ func TestUpdate(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	userRepository := NewUserRepository()
+	userRepository := repository.NewUserRepository()
 	err = userRepository.Update(context.Background(), tx, &user)
 
 	if err != nil {
@@ -289,7 +290,7 @@ func TestDeleteUser_case_positive(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	userRepository := NewUserRepository()
+	userRepository := repository.NewUserRepository()
 
 	err = userRepository.Delete(context.Background(), tx, id)
 
@@ -331,7 +332,7 @@ func TestDeleteUser_case_negative(t *testing.T) {
 		t.Errorf("an error '%s' was not expected when begin database transactional", err)
 	}
 
-	userRepository := NewUserRepository()
+	userRepository := repository.NewUserRepository()
 	err = userRepository.Delete(ctx, tx, id)
 
 	if err != nil {

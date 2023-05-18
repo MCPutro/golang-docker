@@ -1,7 +1,8 @@
-package util
+package test
 
 import (
 	"github.com/MCPutro/golang-docker/model"
+	"github.com/MCPutro/golang-docker/util"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -12,17 +13,17 @@ func TestGenerateToken(t *testing.T) {
 	user := model.User{
 		Id:       123569065,
 		Username: "2",
-		FullName: "3",
+		Fullname: "3",
 		Password: "4",
 	}
 
-	token, err := GenerateToken(&user)
+	token, err := util.GenerateToken(&user)
 
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
 
-	validateToken, err := ValidateToken(token)
+	validateToken, err := util.ValidateToken(token)
 
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
@@ -44,7 +45,7 @@ func TestValidateToken(t *testing.T) {
 	//case expired token
 	token := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MSwiVXNlcm5hbWUiOiIyIiwiZXhwIjoxNjgzNzE2MDYwLCJqdGkiOiIxYzlmMmJhOC05OTFmLTRkOWUtOTRmYi0xNjBiNjdhODk4MTIiLCJzdWIiOiJsb2dpbiJ9.5bI1T_GFL0xB_FaiTPljUF1SGFAxjRES16wmvjJ_gQc2JwyGjGerO-ICahJEYBS8QR6NxxlVkM_V3-MLe28e6w"
 
-	validateToken, err := ValidateToken(token)
+	validateToken, err := util.ValidateToken(token)
 
 	assert.Error(t, err)
 	assert.Nil(t, validateToken)
@@ -53,7 +54,7 @@ func TestValidateToken(t *testing.T) {
 	//case signature invalid
 	token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MSwiVXNlcm5hbWUiOiIyIiwiZXhwIjoxNjgzNzE2MDYwLCJqdGkiOiIxYzlmMmJhOC05OTFmLTRkOWUtOTRmYi0xNjBiNjdhODk4MTIiLCJzdWIiOiJsb2dpbngifQ.5bI1T_GFL0xB_FaiTPljUF1SGFAxjRES16wmvjJ_gQc2JwyGjGerO-ICahJEYBS8QR6NxxlVkM_V3-MLe28e6w"
 
-	validateToken2, err := ValidateToken(token)
+	validateToken2, err := util.ValidateToken(token)
 
 	assert.Error(t, err)
 	assert.Nil(t, validateToken2)
