@@ -12,7 +12,7 @@ func TestUserModel(t *testing.T) {
 	newUser := User{
 		Id:           1,
 		Username:     "emchepe",
-		FullName:     "Mu'ti C Putro",
+		Fullname:     "Mu'ti C Putro",
 		CreationDate: "2023-12-12 10:12:13",
 	}
 

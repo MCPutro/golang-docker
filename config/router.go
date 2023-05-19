@@ -23,12 +23,12 @@ func guestRoutes(router *fiber.App, userController controller.UserController) {
 
 }
 func secureRoutes(router *fiber.App, userController controller.UserController) {
-	secure := router.Group("/", middleware.AuthMiddleware())
+	secure := router.Group("/user", middleware.AuthMiddleware())
 
 	secure.Post("/registration", userController.Registration)
-	secure.Get("/user", userController.ShowAllUser)
-	secure.Get("/user/:uid", userController.ShowUser)
-	secure.Put("/user/:uid", userController.UpdateUser)
-	secure.Delete("/user/:uid", userController.DeleteUser)
+	secure.Get("/", userController.ShowAllUser)
+	secure.Get("/:uid", userController.ShowUser)
+	secure.Put("/:uid", userController.UpdateUser)
+	secure.Delete("/:uid", userController.DeleteUser)
 
 }
