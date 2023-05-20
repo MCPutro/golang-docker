@@ -62,6 +62,11 @@ func (u *userControllerImpl) Registration(c *fiber.Ctx) error {
 func (u *userControllerImpl) ShowAllUser(c *fiber.Ctx) error {
 	users, err := u.service.GetAll(c.UserContext())
 	if err != nil {
+
+		if errors.Is(err, util.ErrNotFound) {
+			return util.WriteToResponseBody(c, fiber.StatusOK, "success", users)
+		}
+
 		return util.WriteToResponseBody(c, fiber.StatusInternalServerError, "failed to get users data. "+err.Error(), nil)
 	}
 
