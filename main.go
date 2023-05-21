@@ -16,6 +16,11 @@ func main() {
 	}
 	defer db.Close()
 
+	err = database.Create_table(db)
+	if err != nil {
+		log.Fatalf("failed create table, error : %s", err)
+	}
+
 	userRepository := repository.NewUserRepository()
 	userService := service.NewUserService(userRepository, db)
 	userController := controller.NewUserController(userService)
