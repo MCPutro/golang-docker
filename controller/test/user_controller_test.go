@@ -36,7 +36,7 @@ func setup(db *sql.DB) *fiber.App {
 		Username: "",
 	})
 
-	fmt.Println(">>", token)
+	//fmt.Println(">>", token)
 
 	return router
 }
@@ -62,7 +62,7 @@ func Test_userController_Login(t *testing.T) {
 	}{
 		// TODO: test case
 		{
-			name: "login - positive case",
+			name: "positive case",
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select (.+) from public."users" u`).WithArgs("user1").
@@ -78,7 +78,7 @@ func Test_userController_Login(t *testing.T) {
 			expectedError:      nil,
 		},
 		{
-			name: "login - incorrect password",
+			name: "incorrect password",
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select (.+) from public."users" u`).WithArgs("user1").
@@ -94,7 +94,7 @@ func Test_userController_Login(t *testing.T) {
 			expectedError:      util.ErrNotMatch,
 		},
 		{
-			name: "login - username not found",
+			name: "username not found",
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select (.+) from public."users" u`).WithArgs("user1").
@@ -158,7 +158,7 @@ func Test_userController_Registration(t *testing.T) {
 		expectedError      error
 	}{
 		{
-			name: "registration - positive case",
+			name: "positive case",
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.password, u.creation_date from public."users" u`).WithArgs("si_unyil").
@@ -176,7 +176,7 @@ func Test_userController_Registration(t *testing.T) {
 			expectedError:      nil,
 		},
 		{
-			name: "registration - username already used",
+			name: "username already used",
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select (.+) from public."users" u`).WithArgs("si_unyil").
@@ -242,7 +242,7 @@ func Test_userController_ShowAllUser(t *testing.T) {
 		expectedError      error
 	}{
 		{
-			name: "show all user",
+			name: "positive case",
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"}).
 					AddRow(1, "user1", "name1", time.Now().String()).
@@ -261,7 +261,7 @@ func Test_userController_ShowAllUser(t *testing.T) {
 			expectedError:      nil,
 		},
 		{
-			name: "show all user - empty list",
+			name: "empty list",
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select (.+) from public."users" u`).WillReturnRows(sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"}))
@@ -314,6 +314,8 @@ func Test_userController_ShowUser(t *testing.T) {
 
 	router := setup(db)
 
+	userId := 4
+
 	tests := []struct {
 		name               string
 		mock               func()
@@ -323,7 +325,39 @@ func Test_userController_ShowUser(t *testing.T) {
 		wantErr            bool
 		expectedStatusCode int
 		expectedError      error
-	}{}
+	}{
+		{
+			name: "positive case",
+			mock: func() {
+				rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"}).
+					AddRow(userId, "user4", "name4", time.Now().String())
+				mock.ExpectBegin()
+				mock.ExpectQuery(`select (.+) from public."users" u`).WithArgs(userId).WillReturnRows(rows)
+				mock.ExpectCommit()
+			},
+			reqBody:            nil,
+			url:                fmt.Sprintf("/user/%d", userId),
+			method:             http.MethodGet,
+			wantErr:            false,
+			expectedStatusCode: http.StatusOK,
+			expectedError:      nil,
+		},
+		{
+			name: "user id not found",
+			mock: func() {
+				rows := sqlmock.NewRows([]string{"user_id", "username", "fullname", "u.creation_date"})
+				mock.ExpectBegin()
+				mock.ExpectQuery(`select (.+) from public."users" u`).WithArgs(userId).WillReturnRows(rows)
+				mock.ExpectRollback()
+			},
+			reqBody:            nil,
+			url:                fmt.Sprintf("/user/%d", userId),
+			method:             http.MethodGet,
+			wantErr:            true,
+			expectedStatusCode: http.StatusNotFound,
+			expectedError:      util.ErrNotFound,
+		},
+	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -363,6 +397,8 @@ func Test_userController_UpdateUser(t *testing.T) {
 
 	router := setup(db)
 
+	userId := 5
+
 	tests := []struct {
 		name               string
 		mock               func()
@@ -372,7 +408,40 @@ func Test_userController_UpdateUser(t *testing.T) {
 		wantErr            bool
 		expectedStatusCode int
 		expectedError      error
-	}{}
+	}{
+		{
+			name: "positive case",
+			mock: func() {
+				mock.ExpectBegin()
+				mock.ExpectExec(`UPDATE public."users"`).
+					WithArgs(userId, "si unyil ke 0", sqlmock.AnyArg() /*,"password1-baru"*/, "si_unyil-0").
+					WillReturnResult(sqlmock.NewResult(0, 1))
+				mock.ExpectCommit()
+			},
+			reqBody:            strings.NewReader(`{"username": "si_unyil-0", "fullname": "si unyil ke 0", "password": "123456789"}`),
+			url:                fmt.Sprintf("/user/%d", userId),
+			method:             http.MethodPut,
+			wantErr:            false,
+			expectedStatusCode: http.StatusOK,
+			expectedError:      nil,
+		},
+		{
+			name: "user id not found",
+			mock: func() {
+				mock.ExpectBegin()
+				mock.ExpectExec(`UPDATE public."users"`).
+					WithArgs(userId, "si unyil ke 0", sqlmock.AnyArg() /*,"password1-baru"*/, "si_unyil-0").
+					WillReturnResult(sqlmock.NewResult(0, 0))
+				mock.ExpectRollback()
+			},
+			reqBody:            strings.NewReader(`{"username": "si_unyil-0", "fullname": "si unyil ke 0", "password": "123456789"}`),
+			url:                fmt.Sprintf("/user/%d", userId),
+			method:             http.MethodPut,
+			wantErr:            true,
+			expectedStatusCode: http.StatusNotFound,
+			expectedError:      util.ErrNotFound,
+		},
+	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -397,6 +466,7 @@ func Test_userController_UpdateUser(t *testing.T) {
 				assert.Contains(t, responseBody["message"], tt.expectedError.Error())
 			} else {
 				assert.Equal(t, "success", responseBody["message"])
+				assert.Equal(t, "si_unyil-0", responseBody["data"].(map[string]interface{})["username"])
 			}
 
 		})
@@ -411,6 +481,8 @@ func Test_userController_DeleteUser(t *testing.T) {
 	}
 	defer db.Close()
 
+	userId := 20
+
 	router := setup(db)
 
 	tests := []struct {
@@ -422,7 +494,40 @@ func Test_userController_DeleteUser(t *testing.T) {
 		wantErr            bool
 		expectedStatusCode int
 		expectedError      error
-	}{}
+	}{
+		{
+			name: "positive case",
+			mock: func() {
+				mock.ExpectBegin()
+				mock.ExpectExec(`DELETE FROM public."users"`).
+					WithArgs(userId).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+				mock.ExpectCommit()
+			},
+			reqBody:            nil,
+			url:                fmt.Sprintf("/user/%d", userId),
+			method:             http.MethodDelete,
+			wantErr:            false,
+			expectedStatusCode: http.StatusOK,
+			expectedError:      nil,
+		},
+		{
+			name: "user id not found",
+			mock: func() {
+				mock.ExpectBegin()
+				mock.ExpectExec(`DELETE FROM public."users"`).
+					WithArgs(userId).
+					WillReturnResult(sqlmock.NewResult(0, 0))
+				mock.ExpectRollback()
+			},
+			reqBody:            nil,
+			url:                fmt.Sprintf("/user/%d", userId),
+			method:             http.MethodDelete,
+			wantErr:            true,
+			expectedStatusCode: http.StatusNotFound,
+			expectedError:      util.ErrNotFound,
+		},
+	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
