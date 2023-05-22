@@ -19,6 +19,7 @@ func mustGetEnv(k string) string {
 	/* load from file .env */
 	err := godotenv.Load(".env")
 	if err != nil {
+		log.Println("Error loading .env file")
 		return ""
 	}
 

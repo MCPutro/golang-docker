@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  db:
+    hostname: db-hub.docker
+    container_name: postgres-local-docker
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_DB_PORT}:${POSTGRES_DB_PORT}"
+#      - "5432:5432"
+  backend:
+    build:
+      context: .
+      target: app-release
+    container_name: backend
+    ports:
+#      - "9999:9999"
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - db

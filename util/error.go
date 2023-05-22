@@ -18,6 +18,6 @@ func init() {
 		ErrNotFound = errors.New("not found")
 		ErrAlreadyUsed = errors.New("already used")
 		ErrNotMatch = errors.New("do not match")
-		log.Printf("init error type")
+		log.Printf("init error type is OK")
 	})
 }
