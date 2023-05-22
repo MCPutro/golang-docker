@@ -9,13 +9,13 @@ Teknologi yang digunakan pada Proyek ini adalah :
 
 ## Menjalankan Proyek
 ### 1. Clone Proyek dari Github
-``` 
+```
 $ mkdir go-project
 $ cd go-project
 $ git clone https://github.com/MCPutro/golang-docker.git
 ```
 
-Tunggu hingga porses selesai, dan akan muncul seperti berikut :
+tunggu hingga porses selesai, dan akan muncul seperti berikut :
 ```
 Cloning into 'golang-docker'...
 remote: Enumerating objects: 261, done.
@@ -25,11 +25,16 @@ Resolving deltas:  22% (27/122)0% (172/172), done.
 Resolving deltas:  27% (33/122)reused 208 (delta 78), pack-reused 0
 Resolving deltas: 100% (122/122), done.
 ```
+lalu masuk kedalam folder golang-docker
+```
+$ cd golang-docker
+```
+
 ### 2. Jalankan proyek ini dengan docker-compose
 ```
-docker compose up -d
+$ docker compose up -d
 ```
-Tunggu hingga project selesai, dan akan muncul tampilan seperi berikut :
+tunggu hingga project selesai, dan akan muncul tampilan seperi berikut :
 ```
 ....
 [+] Running 3/3
@@ -47,10 +52,16 @@ untuk melakukan testing terhadap Rest API yang tersedia bisa menggunakan Postman
 >5. Jika berhasil, akan ada Ikon centang hijau pada daftar Database di sebelah kiri.
 
 - ### Postman
-Pada proyek ini juga disematkan Collection Postman yang dapat anda Gunakan untuk mencoba API.
+pada proyek ini juga disematkan Collection Postman yang dapat anda Gunakan untuk mencoba API.
 >Pre-Build Account : 
 >- username : admin.support
 >- password : admin123
+
+### 4. Mematikan Proyek
+```
+$ docker-compose down -v 
+```
+
 
 <!-- This content will not appear in the rendered Markdown 
 ```
