@@ -30,7 +30,7 @@ lalu masuk kedalam folder golang-docker
 $ cd golang-docker
 ```
 
-### 2. Jalankan proyek ini dengan docker-compose
+### 2. Jalankan proyek ini dengan docker compose
 ```
 $ docker compose up -d
 ```
@@ -51,15 +51,15 @@ untuk melakukan testing terhadap Rest API yang tersedia bisa menggunakan Postman
 >4. Isikan Konfigurasi sesuai dengan File `.env` pada Proyek ini.
 >5. Jika berhasil, akan ada Ikon centang hijau pada daftar Database di sebelah kiri.
 
-- ### Postman
-pada proyek ini juga disematkan Collection Postman yang dapat anda Gunakan untuk mencoba API.
+- ### Postman 
+pada proyek ini juga disematkan [Collection Postman](https://github.com/MCPutro/golang-docker/blob/master/GolangDocker.postman_collection.json) yang dapat anda import kepostman untuk mencoba API.
 >Pre-Build Account : 
 >- username : admin.support
 >- password : admin123
 
 ### 4. Mematikan Proyek
 ```
-$ docker-compose down -v 
+$ docker compose down -v 
 ```
 
 

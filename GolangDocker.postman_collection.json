@@ -1,0 +1,1016 @@
+{
+	"info": {
+		"_postman_id": "fb923f5c-ff7e-4cc5-9b47-88914d425a65",
+		"name": "Golang Docker",
+		"description": "HAR To Postman Generated Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27412179"
+	},
+	"item": [
+		{
+			"name": "Ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9999/ping",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL1}}/ping",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"ping"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sun, 14 May 2023 17:53:03 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/plain; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "4"
+						}
+					],
+					"cookie": [],
+					"body": "text/plain; charset=utf-8 content type is not supported in the response body"
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\" : \"admin.support\",\r\n\t\"password\" : \"admin123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9999/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"admin.support\",\r\n\t\"password\" : \"admin123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9999/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 03:32:34 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "431"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"username\": \"admin.support\",\n        \"fullname\": \"Administrator\",\n        \"token\": \"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MCwiVXNlcm5hbWUiOiJhZG1pbi5zdXBwb3J0IiwiZXhwIjoxNjg0MTIzMzU1LCJqdGkiOiI1NTk1YTVmZi02YzYzLTQ0NTUtYjJmMC02YTZkYzYzOWUzY2YiLCJzdWIiOiJsb2dpbiJ9.LpHR0vs9p41FxVmYze91quDSmrB7tiN21NKbSVJ_AS1JTEp1LznG6LeYl0GLcqRTN9QZeEtXSZetBwc5TniKhA\",\n        \"creation_date\": \"2023-05-14T21:50:41.767658+07:00\"\n    }\n}"
+				},
+				{
+					"name": "incorrect password / 401",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"admin.support\",\r\n\t\"password\" : \".admin123\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:9999/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 03:41:34 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "77"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 401,\n    \"message\": \"failed to login. password do not match\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "username not found / 401",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"admin.support1\",\r\n\t\"password\" : \"admin123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9999/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 18 May 2023 13:25:03 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "74"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 404,\n    \"message\": \"failed to login. username not found\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Registration",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MCwiVXNlcm5hbWUiOiJhZG1pbi5zdXBwb3J0IiwiZXhwIjoxNjg0ODUxMTA0LCJqdGkiOiI0ZGFjNGY0My0xNzZiLTRjMjUtYTEzNy1mODEwZGMxOTk2YzgiLCJzdWIiOiJsb2dpbiJ9.eM9pOPDuLB3N0IYkrNcvy-APHm2lHU6vhNqdnl0syqnAKDLfjYdZygNgKPt1bd8VY8RsBJ_WTkewBa8asDcK7g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\" : \"si_unyil\",\r\n\t\"fullname\" : \"si unyil ke 1\",\r\n\t\"password\" : \"123456789\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9999/user/registration",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"user",
+						"registration"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"si_unyil\",\r\n\t\"fullname\" : \"si unyil ke 1\",\r\n\t\"password\" : \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9999/user/registration",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"registration"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 03:35:05 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "376"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 201,\n    \"message\": \"success\",\n    \"data\": {\n        \"id\": 5,\n        \"username\": \"si_unyil\",\n        \"fullname\": \"si unyil ke 1\",\n        \"token\": \"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6NSwiVXNlcm5hbWUiOiJzaV91bnlpbCIsImV4cCI6MTY4NDEyMzUwNiwianRpIjoiM2JlZDE4NmMtOTkyYy00YmEyLTkxMDktMTVlNzcwM2ZmMDBiIiwic3ViIjoibG9naW4ifQ._KseXsqS4UtFsO86NuHSjEQDb90_nTXS_JCTstT7h10O_5ml3wAhz147Hmdx7lf4oga4Wu7zEiDOlF-ffCWiAw\"\n    }\n}"
+				},
+				{
+					"name": "Username alredy used / 422",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"si_unyil\",\r\n\t\"fullname\" : \"si unyil ke 1\",\r\n\t\"password\" : \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9999/user/registration",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"registration"
+							]
+						}
+					},
+					"status": "Unprocessable Entity",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 18 May 2023 13:28:19 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "84"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 422,\n    \"message\": \"failed to registration. username already used\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "token is expired / 401",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"si_unyil\",\r\n\t\"fullname\" : \"si unyil ke 1\",\r\n\t\"password\" : \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9999/user/registration",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"registration"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Tue, 23 May 2023 13:39:38 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "70"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 401,\n    \"message\": \"invalid token. token is expired\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Get users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MCwiVXNlcm5hbWUiOiJhZG1pbi5zdXBwb3J0IiwiZXhwIjoxNjg0ODUxMTA0LCJqdGkiOiI0ZGFjNGY0My0xNzZiLTRjMjUtYTEzNy1mODEwZGMxOTk2YzgiLCJzdWIiOiJsb2dpbiJ9.eM9pOPDuLB3N0IYkrNcvy-APHm2lHU6vhNqdnl0syqnAKDLfjYdZygNgKPt1bd8VY8RsBJ_WTkewBa8asDcK7g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9999/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9999/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 03:35:49 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "372"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"success\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"username\": \"unyil\",\n            \"fullname\": \"si unyil ke 1\",\n            \"creation_date\": \"2023-05-15T00:17:40.384171+07:00\"\n        },\n        {\n            \"id\": 0,\n            \"username\": \"admin.support\",\n            \"fullname\": \"Administrator\",\n            \"creation_date\": \"2023-05-14T21:50:41.767658+07:00\"\n        },\n        {\n            \"id\": 5,\n            \"username\": \"si_unyil\",\n            \"fullname\": \"si unyil ke 1\",\n            \"creation_date\": \"2023-05-15T10:35:06.005956+07:00\"\n        }\n    ]\n}"
+				},
+				{
+					"name": "unauthorized / 401",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9999/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 03:37:29 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "51"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 401,\n    \"message\": \"unauthorized\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Get user by User ID",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MCwiVXNlcm5hbWUiOiJhZG1pbi5zdXBwb3J0IiwiZXhwIjoxNjg0ODUxMTA0LCJqdGkiOiI0ZGFjNGY0My0xNzZiLTRjMjUtYTEzNy1mODEwZGMxOTk2YzgiLCJzdWIiOiJsb2dpbiJ9.eM9pOPDuLB3N0IYkrNcvy-APHm2lHU6vhNqdnl0syqnAKDLfjYdZygNgKPt1bd8VY8RsBJ_WTkewBa8asDcK7g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9999/user/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"user",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9999/user/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 03:39:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "147"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"id\": 2,\n        \"username\": \"unyil\",\n        \"fullname\": \"si unyil ke 1\",\n        \"creation_date\": \"2023-05-15T00:17:40.384171+07:00\"\n    }\n}"
+				},
+				{
+					"name": "not found / 404",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MCwiVXNlcm5hbWUiOiJhZG1pbi5zdXBwb3J0IiwiZXhwIjoxNjg0MDg2NDQ5LCJqdGkiOiIxOGZjMWZkMS05ZjM2LTQ3ZjMtODlkYi0xYmY0ZmM4ODFlOGMiLCJzdWIiOiJsb2dpbiJ9.njea8gy7XC5NS_YLxVJ3_q6AFy-WzwNpOACYRxNZg0yzNC-91sZvNsx9sDQmBFVRUS3dp6gLdPY1DV5JJDJozg"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:9999/user/22",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"22"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sun, 14 May 2023 17:44:03 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "51"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"status\": 404,\n \"message\": \"id not found\",\n \"data\": null\n}"
+				},
+				{
+					"name": "token is expired / 401",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9999/user/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"2"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 03:38:45 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "70"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 401,\n    \"message\": \"invalid token. token is expired\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "invalid id parameter / 400",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9999/user/2a",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"2a"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 15 May 2023 03:40:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "63"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 400,\n    \"message\": \"user id 2a is not valid.\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Update user by User ID",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MCwiVXNlcm5hbWUiOiJhZG1pbi5zdXBwb3J0IiwiZXhwIjoxNjg0ODUxMTA0LCJqdGkiOiI0ZGFjNGY0My0xNzZiLTRjMjUtYTEzNy1mODEwZGMxOTk2YzgiLCJzdWIiOiJsb2dpbiJ9.eM9pOPDuLB3N0IYkrNcvy-APHm2lHU6vhNqdnl0syqnAKDLfjYdZygNgKPt1bd8VY8RsBJ_WTkewBa8asDcK7g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"si_unyil-0\",\r\n    \"fullname\": \"si unyil ke 0\",\r\n    \"password\": \"123456789\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9999/user/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"user",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"si_unyil-0\",\r\n    \"fullname\": \"si unyil ke 0\",\r\n    \"password\": \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9999/user/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 18 May 2023 16:44:52 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "101"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"id\": 5,\n        \"username\": \"si_unyil-0\",\n        \"fullname\": \"si unyil ke 0\"\n    }\n}"
+				},
+				{
+					"name": "user id not found / 404",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"si_unyil-0\",\r\n    \"fullname\": \"si unyil ke 0\",\r\n    \"password\": \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9999/user/211",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"211"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 18 May 2023 16:46:52 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "79"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 404,\n    \"message\": \"failed to update user. user id not found\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete user by User ID",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MTksIlVzZXJuYW1lIjoidW55aWwwMiIsImV4cCI6MTY4NDA3NzE2NywianRpIjoiZmEwMjNkNDMtOTI2Yi00YmU2LWI4ZTItMjYzMTY4YThhZjQ1Iiwic3ViIjoibG9naW4ifQ.LdOzrU_UHMQtVyCq0UVF9nKaYzIN5P7E5X2Tv6C_WgKb1ou0Pn6gTGtmZsMF7iXP9E6CHorUmvMP_TgmmOErZQ"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9999/user/19",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"user",
+						"19"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MTksIlVzZXJuYW1lIjoidW55aWwwMiIsImV4cCI6MTY4NDA3NzE2NywianRpIjoiZmEwMjNkNDMtOTI2Yi00YmU2LWI4ZTItMjYzMTY4YThhZjQ1Iiwic3ViIjoibG9naW4ifQ.LdOzrU_UHMQtVyCq0UVF9nKaYzIN5P7E5X2Tv6C_WgKb1ou0Pn6gTGtmZsMF7iXP9E6CHorUmvMP_TgmmOErZQ"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:9999/user/19",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"19"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sun, 14 May 2023 14:46:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "73"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"status\": 200,\n \"message\": \"berhasil hapus user dengan id : 19\",\n \"data\": null\n}"
+				},
+				{
+					"name": "Delete user by User ID / 404",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MTksIlVzZXJuYW1lIjoidW55aWwwMiIsImV4cCI6MTY4NDA3NzE2NywianRpIjoiZmEwMjNkNDMtOTI2Yi00YmU2LWI4ZTItMjYzMTY4YThhZjQ1Iiwic3ViIjoibG9naW4ifQ.LdOzrU_UHMQtVyCq0UVF9nKaYzIN5P7E5X2Tv6C_WgKb1ou0Pn6gTGtmZsMF7iXP9E6CHorUmvMP_TgmmOErZQ"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:9999/user/19",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"19"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 18 May 2023 15:15:35 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "79"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 404,\n    \"message\": \"failed to delete user. user id not found\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "bad request id / 400",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6MTksIlVzZXJuYW1lIjoidW55aWwwMiIsImV4cCI6MTY4NDA3NzE2NywianRpIjoiZmEwMjNkNDMtOTI2Yi00YmU2LWI4ZTItMjYzMTY4YThhZjQ1Iiwic3ViIjoibG9naW4ifQ.LdOzrU_UHMQtVyCq0UVF9nKaYzIN5P7E5X2Tv6C_WgKb1ou0Pn6gTGtmZsMF7iXP9E6CHorUmvMP_TgmmOErZQ"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:9999/user/2s",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9999",
+							"path": [
+								"user",
+								"2s"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 18 May 2023 15:16:58 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "63"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 400,\n    \"message\": \"user id 2s is not valid.\",\n    \"data\": null\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL1",
+			"value": "http://localhost:9999",
+			"type": "any"
+		}
+	]
+}
