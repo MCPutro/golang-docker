@@ -60,6 +60,8 @@ func (u *userControllerImpl) Registration(c *fiber.Ctx) error {
 }
 
 func (u *userControllerImpl) ShowAllUser(c *fiber.Ctx) error {
+	get := c.Locals("UserId")
+	fmt.Println("User id :", get)
 	users, err := u.service.GetAll(c.UserContext())
 	if err != nil {
 
