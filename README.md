@@ -26,13 +26,13 @@ Resolving deltas:  27% (33/122)reused 208 (delta 78), pack-reused 0
 Resolving deltas: 100% (122/122), done.
 ```
 lalu masuk kedalam folder golang-docker
-```
-$ cd golang-docker
+```shell
+cd golang-docker
 ```
 
 ### 2. Jalankan proyek ini dengan docker compose
-```
-$ docker compose up -d
+```shell
+docker compose up -d
 ```
 tunggu hingga project selesai, dan akan muncul tampilan seperi berikut :
 ```
@@ -42,7 +42,19 @@ tunggu hingga project selesai, dan akan muncul tampilan seperi berikut :
  ✔ Container postgres-local-docker  Started                  2.0s 
  ✔ Container backend                Started                  3.4s 
 ```
-### 3. Akses proyek
+### 3. Database Migrations
+
+- install golang migrate
+```shell
+go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+```
+
+- jalankan migration up untuk proses pembuatan table dan user admin.support 
+```shell
+migrate -database "postgres://emchepe:welcome1@localhost:5432/test_user_management?sslmode=disable" -path ./database/migrations up
+```
+
+### 4. Akses proyek
 untuk melakukan testing terhadap Rest API yang tersedia bisa menggunakan Postman dan untuk melihat/membuka database bisa menggunakan DBeaver.
 - ### DBeaver
 >1. Buka `DBeaver`.
@@ -58,7 +70,7 @@ pada proyek ini juga disematkan [Collection Postman (GolangDocker.postman_collec
 >- password : admin123
 
 ### 4. Mematikan Proyek
-```
+```shell
 $ docker compose down -v 
 ```
 
