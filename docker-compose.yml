@@ -11,6 +11,11 @@ services:
     ports:
       - "${POSTGRES_DB_PORT}:${POSTGRES_DB_PORT}"
 #      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   backend:
     build:
       context: .
@@ -20,4 +25,5 @@ services:
 #      - "9999:9999"
       - "${APP_PORT}:${APP_PORT}"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
