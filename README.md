@@ -8,7 +8,12 @@ Teknologi yang digunakan pada Proyek ini adalah :
 - Postman : Dokumentasi API
 
 ## Menjalankan Proyek
-### 1. Clone Proyek dari Github
+### 1. Buat folder log
+Buat folder untuk menampung/menyimpan file log lalu ambil path atau address dari folder tersebut.
+Pada projek ini file log akan di simpan di ```C:\Users\Public\Logs```.
+
+
+### 2. Clone Proyek dari Github
 ```
 $ mkdir go-project
 $ cd go-project
@@ -30,7 +35,10 @@ lalu masuk kedalam folder golang-docker
 cd golang-docker
 ```
 
-### 2. Jalankan proyek ini dengan docker compose
+#### Merubah Folder Log: 
+Setelah masuk ke folder ```golang-docker``` edit file ```.env``` lalu ubah value pada bagian ```LOG_PATH```.  Paste-kan folder yang telah di buat pada lagkah pertama.
+
+### 3. Jalankan proyek ini dengan docker compose
 ```shell
 docker compose up -d
 ```
@@ -42,7 +50,7 @@ tunggu hingga project selesai, dan akan muncul tampilan seperi berikut :
  ✔ Container postgres-local-docker  Started                  2.0s 
  ✔ Container backend                Started                  3.4s 
 ```
-### 3. Database Migrations
+### 4. Database Migrations
 
 - install golang migrate
 ```shell
@@ -54,7 +62,7 @@ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@lat
 migrate -database "postgres://emchepe:welcome1@localhost:5432/test_user_management?sslmode=disable" -path ./database/migrations up
 ```
 
-### 4. Akses proyek
+### 5. Akses proyek
 untuk melakukan testing terhadap Rest API yang tersedia bisa menggunakan Postman dan untuk melihat/membuka database bisa menggunakan DBeaver.
 - ### DBeaver
 >1. Buka `DBeaver`.
@@ -69,7 +77,7 @@ pada proyek ini juga disematkan [Collection Postman (GolangDocker.postman_collec
 >- username : admin.support
 >- password : admin123
 
-### 4. Mematikan Proyek
+### 6. Mematikan Proyek
 ```shell
 $ docker compose down -v 
 ```
@@ -82,64 +90,5 @@ docker build -t test-go-docker:1.0.1 .
 
 ```
 docker run --name user-manegement -d -p 9999:9999 -it test-go-docker:1.0.1 
-```
-
-```dockerfile
-#FROM golang:1.19.9 AS builder
-FROM --platform=$BUILDPLATFORM golang:1.19.9-alpine AS builder
-
-WORKDIR /app
-
-ENV CGO_ENABLED 0
-ENV GOPATH /go
-ENV GOCACHE /go-build
-
-COPY go.mod go.sum ./
-RUN --mount=type=cache,target=/go/pkg/mod/cache \
-    go mod download
-
-COPY . .
-
-RUN --mount=type=cache,target=/go/pkg/mod/cache \
-    --mount=type=cache,target=/go-build \
-    go build -o bin/backend main.go
-
-CMD ["/app/bin/backend"]
-
-FROM builder AS dev-envs
-
-RUN <<EOF
-apk update
-apk add git
-EOF
-#
-RUN <<EOF
-addgroup -S docker
-adduser -S --shell /bin/bash --ingroup docker vscode
-adduser -S --shell /bin/bash --ingroup docker vscode
-EOF
-
-# install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
-
-CMD ["go", "run", "main.go"]
-
-FROM scratch
-COPY --from=builder /app/bin/backend /usr/local/bin/backend
-COPY --from=builder /app/.env .
-
-#COPY .env /usr/local/bin/
-
-CMD ["/usr/local/bin/backend"]
-
-```
-
-
-```
-docker compose up -d
-```
-
-```
-docker-compose down --volumes
 ```
 -->

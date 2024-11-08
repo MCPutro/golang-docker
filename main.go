@@ -6,13 +6,17 @@ import (
 	"github.com/MCPutro/golang-docker/database"
 	"github.com/MCPutro/golang-docker/repository"
 	"github.com/MCPutro/golang-docker/service"
+	"github.com/MCPutro/golang-docker/util/logger"
 	"log"
 )
 
 func main() {
+	loggers := logger.NewLogger()
+	loggers.Infoln("Application Starting")
+
 	db, err := database.InitDatabase()
 	if err != nil {
-		log.Fatalf("failed create database connection, error : %s", err)
+		loggers.Errorf("Database initialization failed with error: %s", err)
 	}
 	defer db.Close()
 
@@ -27,7 +31,7 @@ func main() {
 
 	router := config.NewRouter(userController)
 
-	log.Println("Running in port", PORT)
+	loggers.Infof("Application listening on port %s", PORT)
 
 	err = router.Listen(":" + PORT)
 	if err != nil {

@@ -1,4 +1,4 @@
-version: "3.9"
+#version: "3.9"
 
 services:
   db:
@@ -19,8 +19,12 @@ services:
   backend:
     build:
       context: .
-      target: app-release
+      target: builder
     container_name: backend
+    environment:
+      - "TZ=${TIMEZONE}"
+    volumes:
+      - "${LOG_PATH}:/app/logs"
     ports:
 #      - "9999:9999"
       - "${APP_PORT}:${APP_PORT}"

@@ -4,11 +4,13 @@ import (
 	"github.com/MCPutro/golang-docker/controller"
 	"github.com/MCPutro/golang-docker/middleware"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
 func NewRouter(userController controller.UserController) *fiber.App {
 	router := fiber.New()
 
+	router.Use(requestid.New())
 	router.Use(middleware.ContentTypeMiddleware())
 
 	guestRoutes(router, userController)

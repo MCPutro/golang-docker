@@ -7,6 +7,7 @@ import (
 	"github.com/MCPutro/golang-docker/model/web"
 	"github.com/MCPutro/golang-docker/service"
 	"github.com/MCPutro/golang-docker/util"
+	"github.com/MCPutro/golang-docker/util/logger"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
@@ -26,6 +27,9 @@ func (u *userControllerImpl) Login(c *fiber.Ctx) error {
 		return util.WriteToResponseBody(c, fiber.StatusBadRequest, "invalid request body", nil)
 	}
 
+	// logging
+	logger.ContextLogger(c.UserContext()).Infof("%+v", body)
+
 	user, err := u.service.Login(c.UserContext(), body)
 	if err != nil {
 		if errors.Is(err, util.ErrNotFound) {
@@ -35,6 +39,8 @@ func (u *userControllerImpl) Login(c *fiber.Ctx) error {
 		return util.WriteToResponseBody(c, fiber.StatusUnauthorized, "failed to login. "+err.Error(), nil)
 	}
 
+	// logging
+	logger.ContextLogger(c.UserContext()).Infof("%+v", user)
 	//success message
 	return util.WriteToResponseBody(c, fiber.StatusOK, "success", user)
 }

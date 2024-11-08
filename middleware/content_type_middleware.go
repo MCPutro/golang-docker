@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"github.com/MCPutro/golang-docker/util"
 	"github.com/gofiber/fiber/v2"
@@ -8,6 +9,12 @@ import (
 
 func ContentTypeMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+
+		respHeaders := c.GetRespHeaders()
+		// Add the request ID to UserContext
+		ctx := context.WithValue(c.UserContext(), fiber.HeaderXRequestID, respHeaders["X-Request-Id"])
+		c.SetUserContext(ctx)
+
 		if c.Method() == fiber.MethodPost || c.Method() == fiber.MethodPut {
 			contentType := c.Get(fiber.HeaderContentType, "")
 			if contentType == "" {
