@@ -59,7 +59,7 @@ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@lat
 
 - jalankan migration up untuk proses pembuatan table dan user admin.support 
 ```shell
-migrate -database "postgres://emchepe:welcome1@localhost:5432/test_user_management?sslmode=disable" -path ./database/migrations up
+migrate -database "postgres://emchepe:welcome1@localhost:5432/test_user_management?sslmode=disable" -path ./migrations up
 ```
 
 ### 5. Akses proyek
@@ -72,7 +72,7 @@ untuk melakukan testing terhadap Rest API yang tersedia bisa menggunakan Postman
 >5. Jika berhasil, akan ada Ikon centang hijau pada daftar Database di sebelah kiri.
 
 - ### Postman 
-pada proyek ini juga disematkan [Collection Postman (GolangDocker.postman_collection.json)](https://github.com/MCPutro/golang-docker/blob/master/GolangDocker.postman_collection.json) yang dapat anda import kepostman untuk mencoba API.
+pada proyek ini juga disematkan [Collection Postman (GolangDocker.postman_collection.json)](https://github.com/MCPutro/golang-docker/blob/master/postmanCollection/GolangDocker.postman_collection.json) yang dapat anda import kepostman untuk mencoba API.
 >Pre-Build Account : 
 >- username : admin.support
 >- password : admin123

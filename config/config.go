@@ -4,7 +4,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/MCPutro/golang-docker/util/logger"
+	"github.com/MCPutro/golang-docker/internal/util/logger"
 	"github.com/joho/godotenv"
 )
 
