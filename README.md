@@ -47,8 +47,8 @@ tunggu hingga project selesai, dan akan muncul tampilan seperi berikut :
 ....
 [+] Running 3/3
  ✔ Network golang-docker_default    Created                  0.9s 
- ✔ Container postgres-local-docker  Started                  2.0s 
- ✔ Container backend                Started                  3.4s 
+ ✔ Container postgres-local-docker  Healthy                  11.1s 
+ ✔ Container backend                Started                  11.1s 
 ```
 ### 4. Database Migrations
 Pada project ini menggunakan database migration untuk membantu melakukan tracking perubahan struktur database. 
