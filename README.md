@@ -36,7 +36,7 @@ cd golang-docker
 ```
 
 #### Merubah Folder Log: 
-Setelah masuk ke folder ```golang-docker``` edit file ```.env``` lalu ubah value pada bagian ```LOG_PATH```.  Paste-kan folder yang telah di buat pada lagkah pertama.
+Setelah masuk ke folder ```golang-docker``` edit file ```.env``` lalu ubah value pada bagian ```LOG_PATH```.  Paste-kan path atau address dari folder yang telah di buat pada langkah pertama.
 
 ### 3. Jalankan proyek ini dengan docker compose
 ```shell
@@ -51,16 +51,19 @@ tunggu hingga project selesai, dan akan muncul tampilan seperi berikut :
  ✔ Container backend                Started                  3.4s 
 ```
 ### 4. Database Migrations
+Pada project ini menggunakan database migration untuk membantu melakukan tracking perubahan struktur database. 
 
-- install golang migrate
+Langkah untuk menginstall :
+- install golang migrate dengan perintah di bawah ini. Saat menginstall Golang Migrate, secara otomatis terdapat executable file di folder `$GOPATH/bin/` dengan nama `migrate`.
 ```shell
 go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 ```
 
-- jalankan migration up untuk proses pembuatan table dan user admin.support 
+- jalankan migration up untuk proses pembuatan table dan user `admin.support`.  
 ```shell
 migrate -database "postgres://emchepe:welcome1@localhost:5432/test_user_management?sslmode=disable" -path ./migrations up
 ```
+note : Agar `migrate` bisa di akses lewat terminal, pastikan `$GOPATH/bin` sudah terpasang di terminal.
 
 ### 5. Akses proyek
 untuk melakukan testing terhadap Rest API yang tersedia bisa menggunakan Postman dan untuk melihat/membuka database bisa menggunakan DBeaver.
