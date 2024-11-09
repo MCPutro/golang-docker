@@ -10,7 +10,7 @@ Teknologi yang digunakan pada Proyek ini adalah :
 ## Menjalankan Proyek
 ### 1. Buat folder log
 Buat folder untuk menampung/menyimpan file log lalu ambil path atau address dari folder tersebut.
-Pada projek ini file log akan di simpan di ```C:\Users\Public\Logs```.
+Pada projek ini file log akan di simpan di `C:\Users\Public\Logs`.
 
 
 ### 2. Clone Proyek dari Github
@@ -36,7 +36,7 @@ cd golang-docker
 ```
 
 #### Merubah Folder Log: 
-Setelah masuk ke folder ```golang-docker``` edit file ```.env``` lalu ubah value pada bagian ```LOG_PATH```.  Paste-kan path atau address dari folder yang telah di buat pada langkah pertama.
+Setelah masuk ke folder `golang-docker` edit file `.env` lalu ubah value pada bagian `LOG_PATH`.  Paste-kan path atau address dari folder yang telah di buat pada langkah pertama.
 
 ### 3. Jalankan proyek ini dengan docker compose
 ```shell
@@ -63,7 +63,7 @@ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@lat
 ```shell
 migrate -database "postgres://emchepe:welcome1@localhost:5432/test_user_management?sslmode=disable" -path ./migrations up
 ```
-note : Agar `migrate` bisa di akses lewat terminal, pastikan `$GOPATH/bin` sudah terpasang di terminal.
+Note : Agar `migrate` bisa di akses lewat terminal, pastikan `$GOPATH/bin` sudah terpasang di terminal.
 
 ### 5. Akses proyek
 untuk melakukan testing terhadap Rest API yang tersedia bisa menggunakan Postman dan untuk melihat/membuka database bisa menggunakan DBeaver.
@@ -84,14 +84,3 @@ pada proyek ini juga disematkan [Collection Postman (GolangDocker.postman_collec
 ```shell
 $ docker compose down -v 
 ```
-
-
-<!-- This content will not appear in the rendered Markdown 
-```
-docker build -t test-go-docker:1.0.1 .   
-```
-
-```
-docker run --name user-manegement -d -p 9999:9999 -it test-go-docker:1.0.1 
-```
--->
