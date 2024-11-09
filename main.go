@@ -7,12 +7,13 @@ import (
 	"github.com/MCPutro/golang-docker/repository"
 	"github.com/MCPutro/golang-docker/service"
 	"github.com/MCPutro/golang-docker/util/logger"
-	"log"
 )
 
 func main() {
 	loggers := logger.NewLogger()
 	loggers.Infoln("Application Starting")
+
+	config.NewConfig()
 
 	db, err := database.InitDatabase()
 	if err != nil {
@@ -35,6 +36,7 @@ func main() {
 
 	err = router.Listen(":" + PORT)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
+		loggers.Errorln("Application listening failed with error :", err)
 	}
 }
