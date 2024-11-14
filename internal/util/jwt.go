@@ -3,7 +3,7 @@ package util
 import (
 	"errors"
 	"fmt"
-	"github.com/MCPutro/golang-docker/internal/model"
+	"github.com/MCPutro/golang-docker/internal/entity"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"time"
@@ -16,7 +16,7 @@ type MyCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateToken(req *model.User) (string, error) {
+func GenerateToken(req *entity.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"Id":       req.Id,

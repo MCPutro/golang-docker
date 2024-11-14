@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/MCPutro/golang-docker/internal/model"
-	"github.com/MCPutro/golang-docker/internal/model/web"
+	"github.com/MCPutro/golang-docker/internal/entity"
 	"github.com/MCPutro/golang-docker/internal/repository/user"
 	"github.com/MCPutro/golang-docker/internal/util"
+	"github.com/MCPutro/golang-docker/internal/web/request"
+	"github.com/MCPutro/golang-docker/internal/web/response"
 )
 
 type serviceImpl struct {
@@ -20,7 +21,7 @@ func NewService(repo user.Repository, db *sql.DB) Service {
 	return &serviceImpl{repo: repo, db: db}
 }
 
-func (u *serviceImpl) Registration(ctx context.Context, req *web.UserCreateRequest) (*web.UserResponse, error) {
+func (u *serviceImpl) Registration(ctx context.Context, req *request.UserCreate) (*response.UserResponse, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -30,7 +31,7 @@ func (u *serviceImpl) Registration(ctx context.Context, req *web.UserCreateReque
 
 	//check username already exist or not
 	existingUsername, err := u.repo.FindByUsername(ctx, tx, req.Username)
-	// if username is exists return error
+	// if username is existing return error
 	if existingUsername != nil {
 		err = fmt.Errorf("username %w", util.ErrAlreadyUsed)
 		return nil, err
@@ -41,7 +42,7 @@ func (u *serviceImpl) Registration(ctx context.Context, req *web.UserCreateReque
 		return nil, err
 	}
 
-	message := &model.User{
+	message := &entity.User{
 		Username: req.Username,
 		Fullname: req.Fullname,
 		Password: password,
@@ -59,7 +60,7 @@ func (u *serviceImpl) Registration(ctx context.Context, req *web.UserCreateReque
 			return nil, err
 		}
 
-		return &web.UserResponse{
+		return &response.UserResponse{
 			Id:           message.Id,
 			Username:     message.Username,
 			Fullname:     message.Fullname,
@@ -69,7 +70,7 @@ func (u *serviceImpl) Registration(ctx context.Context, req *web.UserCreateReque
 	}
 }
 
-func (u *serviceImpl) Update(ctx context.Context, req *model.User) (*web.UserResponse, error) {
+func (u *serviceImpl) Update(ctx context.Context, req *entity.User) (*response.UserResponse, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -90,7 +91,7 @@ func (u *serviceImpl) Update(ctx context.Context, req *model.User) (*web.UserRes
 	if err != nil {
 		return nil, err
 	} else {
-		return &web.UserResponse{
+		return &response.UserResponse{
 			Id:       req.Id,
 			Username: req.Username,
 			Fullname: req.Fullname,
@@ -98,7 +99,7 @@ func (u *serviceImpl) Update(ctx context.Context, req *model.User) (*web.UserRes
 	}
 }
 
-func (u *serviceImpl) GetAll(ctx context.Context) ([]*model.User, error) {
+func (u *serviceImpl) GetAll(ctx context.Context) ([]*entity.User, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -120,7 +121,7 @@ func (u *serviceImpl) GetAll(ctx context.Context) ([]*model.User, error) {
 	return users, nil
 }
 
-func (u *serviceImpl) GetById(ctx context.Context, id int) (*model.User, error) {
+func (u *serviceImpl) GetById(ctx context.Context, id int) (*entity.User, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -137,7 +138,7 @@ func (u *serviceImpl) GetById(ctx context.Context, id int) (*model.User, error) 
 	return findByID, nil
 }
 
-func (u *serviceImpl) Login(ctx context.Context, req *web.UserCreateRequest) (*web.UserResponse, error) {
+func (u *serviceImpl) Login(ctx context.Context, req *request.UserCreate) (*response.UserResponse, error) {
 	//Begin db transactional
 	tx, err := u.db.Begin()
 	if err != nil {
@@ -160,7 +161,7 @@ func (u *serviceImpl) Login(ctx context.Context, req *web.UserCreateRequest) (*w
 			return nil, err
 		}
 
-		return &web.UserResponse{
+		return &response.UserResponse{
 			Id:           findByUsername.Id,
 			Username:     findByUsername.Username,
 			Fullname:     findByUsername.Fullname,

@@ -39,7 +39,6 @@ func NewLogger(level logrus.Level) *logrus.Logger {
 			log.Fatal(err)
 		}
 
-		//
 		logger = logrus.New()
 		//logger.SetFormatter(&logrus.TextFormatter{
 		//	FullTimestamp:   true,

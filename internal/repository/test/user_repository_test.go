@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/MCPutro/golang-docker/internal/model"
+	"github.com/MCPutro/golang-docker/internal/entity"
 	"github.com/MCPutro/golang-docker/internal/repository"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -19,7 +19,7 @@ func TestSaveUser(t *testing.T) {
 	repoManager := repository.NewRepositoryManager()
 	userRepository := repoManager.UserRepository()
 
-	newUser := model.User{
+	newUser := entity.User{
 		Username: "kuro",
 		Fullname: "kurokami",
 		Password: "asd123",
@@ -76,7 +76,7 @@ func TestFindAll(t *testing.T) {
 	}
 	defer db.Close()
 
-	users := []model.User{
+	users := []entity.User{
 		{Id: 1, Username: "user1", Fullname: "name1", CreationDate: time.Now().String()},
 		{Id: 2, Username: "user2", Fullname: "name2", CreationDate: time.Now().String()},
 	}
@@ -127,7 +127,7 @@ func TestFindByID(t *testing.T) {
 	defer db.Close()
 
 	//mock data resp
-	users := []model.User{
+	users := []entity.User{
 		{Id: 1, Username: "user1", Fullname: "name1"},
 	}
 
@@ -180,7 +180,7 @@ func TestFindByUsername(t *testing.T) {
 	defer db.Close()
 
 	//mock data resp
-	users := []model.User{
+	users := []entity.User{
 		{Id: 1, Username: "user1", Fullname: "name1"},
 	}
 
@@ -221,7 +221,7 @@ func TestFindByUsername(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 
-	newUser := model.User{
+	newUser := entity.User{
 		Id:       4,
 		Fullname: "empat",
 		Password: "3mpat",

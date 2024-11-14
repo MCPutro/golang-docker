@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/MCPutro/golang-docker/internal/model"
-	"github.com/MCPutro/golang-docker/internal/model/web"
-	"github.com/MCPutro/golang-docker/internal/repository/user"
-	user2 "github.com/MCPutro/golang-docker/internal/service/user"
+	"github.com/MCPutro/golang-docker/internal/entity"
+	userService "github.com/MCPutro/golang-docker/internal/service/user"
 	"github.com/MCPutro/golang-docker/internal/util"
+	"github.com/MCPutro/golang-docker/internal/web/request"
+	"github.com/MCPutro/golang-docker/internal/web/response"
+
+	"github.com/MCPutro/golang-docker/internal/repository/user"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -30,9 +32,9 @@ func Test_userServiceImpl_GetAll(t *testing.T) {
 	tests := []struct {
 		name    string
 		mock    func()
-		repo    user.UserRepository
+		repo    user.Repository
 		args    args
-		want    []*model.User
+		want    []*entity.User
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -48,9 +50,9 @@ func Test_userServiceImpl_GetAll(t *testing.T) {
 				mock.ExpectQuery(`select (.+) from public."users" u`).WillReturnRows(rows)
 				mock.ExpectCommit()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{ctx: context.Background()},
-			want: []*model.User{
+			want: []*entity.User{
 				{Id: 1, Username: "user1", Fullname: "name1", CreationDate: creationDate},
 				{Id: 2, Username: "user2", Fullname: "name2", CreationDate: creationDate},
 				{Id: 3, Username: "user3", Fullname: "name3", CreationDate: creationDate},
@@ -65,7 +67,7 @@ func Test_userServiceImpl_GetAll(t *testing.T) {
 				mock.ExpectQuery(`select (.+) from public."users" u`).WillReturnRows(sqlmock.NewRows([]string{"user_id"}))
 				mock.ExpectRollback()
 			},
-			repo:    user.NewUserRepository(),
+			repo:    user.NewRepository(),
 			args:    args{ctx: context.Background()},
 			want:    nil,
 			wantErr: true,
@@ -74,7 +76,7 @@ func Test_userServiceImpl_GetAll(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			u := user2.NewUserService(tt.repo, db)
+			u := userService.NewService(tt.repo, db)
 			got, err := u.GetAll(tt.args.ctx)
 			if (err != nil) != tt.wantErr {
 				//t.Errorf("GetAll(%v)", tt.args.ctx)
@@ -98,7 +100,7 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 	}
 	defer db.Close()
 
-	userRepository := user.NewUserRepository()
+	userRepository := user.NewRepository()
 
 	type args struct {
 		ctx context.Context
@@ -107,9 +109,9 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 	tests := []struct {
 		name    string
 		mock    func()
-		repo    user.UserRepository
+		repo    user.Repository
 		args    args
-		want    *model.User
+		want    *entity.User
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -128,7 +130,7 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 				ctx: context.Background(),
 				id:  1,
 			},
-			want: &model.User{
+			want: &entity.User{
 				Id:           1,
 				Username:     "user1",
 				Fullname:     "name1",
@@ -157,7 +159,7 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			u := user2.NewUserService(tt.repo, db)
+			u := userService.NewService(tt.repo, db)
 			got, err := u.GetById(tt.args.ctx, tt.args.id)
 			//if !tt.wantErr(t, err1, fmt.Sprintf("GetById(%v, %v)", tt.args.ctx, tt.args.id)) {
 			//	return
@@ -186,21 +188,21 @@ func Test_userServiceImpl_Login(t *testing.T) {
 	}
 	defer db.Close()
 
-	request := web.UserCreateRequest{
+	userRequest := request.UserCreate{
 		Username: "admin.support",
 		Password: "admin123",
 	}
 
 	type args struct {
 		ctx context.Context
-		req *web.UserCreateRequest
+		req *request.UserCreate
 	}
 	tests := []struct {
 		name               string
 		mock               func()
-		repo               user.UserRepository
+		repo               user.Repository
 		args               args
-		want               *web.UserResponse
+		want               *response.UserResponse
 		wantErr            bool
 		expectErrorMessage error
 	}{
@@ -210,16 +212,16 @@ func Test_userServiceImpl_Login(t *testing.T) {
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.password, u.creation_date from public."users" u`).
-					WithArgs(request.Username).
+					WithArgs(userRequest.Username).
 					WillReturnRows(sqlmock.NewRows([]string{"user_id", "username", "fullname", "password", "u.creation_date"}).
 						AddRow(0, "admin.support", "Administrator", "$2a$10$vzSUW9Zqo7O0UYrsSQE6LOs359dcuVPj6dlLPmOv4a4uwIQH5Ue0u", creationDate))
 				mock.ExpectCommit()
 			},
-			repo: user.NewUserRepository(),
-			args: args{ctx: context.Background(), req: &request},
-			want: &web.UserResponse{
+			repo: user.NewRepository(),
+			args: args{ctx: context.Background(), req: &userRequest},
+			want: &response.UserResponse{
 				Id:           0,
-				Username:     request.Username,
+				Username:     userRequest.Username,
 				Fullname:     "Administrator",
 				CreationDate: creationDate,
 			},
@@ -231,16 +233,16 @@ func Test_userServiceImpl_Login(t *testing.T) {
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.password, u.creation_date from public."users" u`).
-					WithArgs(request.Username).
+					WithArgs(userRequest.Username).
 					WillReturnRows(sqlmock.NewRows([]string{"user_id", "username", "fullname", "password", "u.creation_date"}).
 						AddRow(0, "admin.support", "Administrator", "$2a$10$vzSUW9Zqo7O0UYrsSQE6LOs359dcuVPj6dlLPmOv4a4uwIQH5Ue0u", creationDate))
 				mock.ExpectRollback()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{
 				ctx: context.Background(),
-				req: &web.UserCreateRequest{
-					Username: request.Username,
+				req: &request.UserCreate{
+					Username: userRequest.Username,
 					Password: "request.Password",
 				},
 			},
@@ -253,15 +255,15 @@ func Test_userServiceImpl_Login(t *testing.T) {
 			mock: func() {
 				mock.ExpectBegin()
 				mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.password, u.creation_date from public."users" u`).
-					WithArgs(request.Username).
+					WithArgs(userRequest.Username).
 					WillReturnRows(sqlmock.NewRows([]string{"user_id", "username", "fullname", "password", "u.creation_date"}))
 				mock.ExpectRollback()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{
 				ctx: context.Background(),
-				req: &web.UserCreateRequest{
-					Username: request.Username,
+				req: &request.UserCreate{
+					Username: userRequest.Username,
 					Password: "request.Password",
 				},
 			},
@@ -273,7 +275,7 @@ func Test_userServiceImpl_Login(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			u := user2.NewUserService(tt.repo, db)
+			u := userService.NewService(tt.repo, db)
 			got, err := u.Login(tt.args.ctx, tt.args.req)
 			//if !tt.wantErr(t, err, fmt.Sprintf("Login(%v, %v)", tt.args.ctx, tt.args.req)) {
 			//	return
@@ -312,7 +314,7 @@ func Test_userServiceImpl_Registration(t *testing.T) {
 	defer db.Close()
 
 	//dummy data
-	dummy := model.User{
+	dummy := entity.User{
 		Id:           1,
 		Username:     "si.unyil",
 		Fullname:     "si unyil",
@@ -320,7 +322,7 @@ func Test_userServiceImpl_Registration(t *testing.T) {
 		CreationDate: creationDate,
 	}
 
-	resp := &web.UserResponse{
+	resp := &response.UserResponse{
 		Id:       dummy.Id,
 		Username: dummy.Username,
 		Fullname: dummy.Fullname,
@@ -329,14 +331,14 @@ func Test_userServiceImpl_Registration(t *testing.T) {
 
 	type args struct {
 		ctx context.Context
-		req *web.UserCreateRequest
+		req *request.UserCreate
 	}
 	tests := []struct {
 		name               string
 		mock               func()
-		repo               user.UserRepository
+		repo               user.Repository
 		args               args
-		want               *web.UserResponse
+		want               *response.UserResponse
 		wantErr            bool
 		expectErrorMessage error
 	}{
@@ -355,10 +357,10 @@ func Test_userServiceImpl_Registration(t *testing.T) {
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(dummy.Id))
 				mock.ExpectCommit()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{
 				ctx: context.Background(),
-				req: &web.UserCreateRequest{
+				req: &request.UserCreate{
 					Username: dummy.Username,
 					Fullname: dummy.Fullname,
 					Password: dummy.Password,
@@ -378,10 +380,10 @@ func Test_userServiceImpl_Registration(t *testing.T) {
 						AddRow(dummy.Id, dummy.Username, dummy.Fullname, dummy.Password, dummy.CreationDate))
 				mock.ExpectRollback()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{
 				ctx: context.Background(),
-				req: &web.UserCreateRequest{
+				req: &request.UserCreate{
 					Username: dummy.Username,
 					Fullname: dummy.Fullname,
 					Password: dummy.Password,
@@ -395,7 +397,7 @@ func Test_userServiceImpl_Registration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			u := user2.NewUserService(tt.repo, db)
+			u := userService.NewService(tt.repo, db)
 			got, err := u.Registration(tt.args.ctx, tt.args.req)
 			//if !tt.wantErr(t, err, fmt.Sprintf("Registration(%v, %v)", tt.args.ctx, tt.args.req)) {
 			//	return
@@ -442,7 +444,7 @@ func Test_userServiceImpl_Remove(t *testing.T) {
 	tests := []struct {
 		name               string
 		mock               func()
-		repo               user.UserRepository
+		repo               user.Repository
 		args               args
 		wantErr            bool
 		expectErrorMessage error
@@ -457,7 +459,7 @@ func Test_userServiceImpl_Remove(t *testing.T) {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 				mock.ExpectCommit()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{
 				ctx: context.Background(),
 				id:  1,
@@ -474,7 +476,7 @@ func Test_userServiceImpl_Remove(t *testing.T) {
 					WillReturnResult(sqlmock.NewResult(0, 0))
 				mock.ExpectRollback()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{
 				ctx: context.Background(),
 				id:  1,
@@ -486,7 +488,7 @@ func Test_userServiceImpl_Remove(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			u := user2.NewUserService(tt.repo, db)
+			u := userService.NewService(tt.repo, db)
 			//tt.wantErr(t, u.Remove(tt.args.ctx, tt.args.id), fmt.Sprintf("Remove(%v, %v)", tt.args.ctx, tt.args.id))
 			err := u.Remove(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -519,14 +521,14 @@ func Test_userServiceImpl_Update(t *testing.T) {
 
 	type args struct {
 		ctx context.Context
-		req *model.User
+		req *entity.User
 	}
 	tests := []struct {
 		name               string
 		mock               func()
-		repo               user.UserRepository
+		repo               user.Repository
 		args               args
-		want               *web.UserResponse
+		want               *response.UserResponse
 		wantErr            bool
 		expectErrorMessage error
 	}{
@@ -541,17 +543,17 @@ func Test_userServiceImpl_Update(t *testing.T) {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 				mock.ExpectCommit()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{
 				ctx: context.Background(),
-				req: &model.User{
+				req: &entity.User{
 					Id:       1,
 					Username: "username1-baru",
 					Fullname: "fullname1-baru",
 					Password: "password1-baru",
 				},
 			},
-			want: &web.UserResponse{
+			want: &response.UserResponse{
 				Id:       1,
 				Username: "username1-baru",
 				Fullname: "fullname1-baru",
@@ -569,10 +571,10 @@ func Test_userServiceImpl_Update(t *testing.T) {
 					WillReturnResult(sqlmock.NewResult(0, 0))
 				mock.ExpectRollback()
 			},
-			repo: user.NewUserRepository(),
+			repo: user.NewRepository(),
 			args: args{
 				ctx: context.Background(),
-				req: &model.User{
+				req: &entity.User{
 					Id:       1,
 					Username: "username1-baru",
 					Fullname: "fullname1-baru",
@@ -587,7 +589,7 @@ func Test_userServiceImpl_Update(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			u := user2.NewUserService(tt.repo, db)
+			u := userService.NewService(tt.repo, db)
 			got, err := u.Update(tt.args.ctx, tt.args.req)
 			//if !tt.wantErr(t, err, fmt.Sprintf("Update(%v, %v)", tt.args.ctx, tt.args.req)) {
 			//	return

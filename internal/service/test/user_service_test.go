@@ -2,12 +2,11 @@ package test
 
 import (
 	"context"
-	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/MCPutro/golang-docker/internal/model"
-	"github.com/MCPutro/golang-docker/internal/model/web"
-	"github.com/MCPutro/golang-docker/internal/repository"
-	"github.com/MCPutro/golang-docker/internal/service"
+	"github.com/MCPutro/golang-docker/internal/entity"
+	userRepo "github.com/MCPutro/golang-docker/internal/repository/user"
+	userService "github.com/MCPutro/golang-docker/internal/service/user"
+	"github.com/MCPutro/golang-docker/internal/web/request"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"
@@ -15,7 +14,7 @@ import (
 
 func TestServiceUserCreate(t *testing.T) {
 
-	request := &web.UserCreateRequest{
+	userRequest := &request.UserCreate{
 		Username: "unyil",
 		Fullname: "unyil-unyilan",
 		Password: "pass-unyil",
@@ -36,13 +35,10 @@ func TestServiceUserCreate(t *testing.T) {
 	mock.ExpectCommit()
 
 	ctx := context.Background()
-	repositoryManager := repository.NewRepositoryManager()
-	serviceManager := service.NewServiceManager(repositoryManager, db)
+	newRepository := userRepo.NewRepository()
+	newService := userService.NewService(newRepository, db)
 
-	resp, err := serviceManager.UserService().Registration(ctx, request)
-
-	//fmt.Println(">>", err)
-	//fmt.Println(">>", resp)
+	resp, err := newService.Registration(ctx, userRequest)
 
 	// we make sure that all expectations were met
 	if errMock := mock.ExpectationsWereMet(); errMock != nil {
@@ -56,7 +52,7 @@ func TestServiceUserCreate(t *testing.T) {
 // positive case
 func TestServiceUpdateUser_Positive(t *testing.T) {
 
-	request := &model.User{
+	userUpdate := &entity.User{
 		Id:       12,
 		Username: "pa ogah",
 		Fullname: "gope dulu",
@@ -65,74 +61,53 @@ func TestServiceUpdateUser_Positive(t *testing.T) {
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
-		log.Fatalln(err)
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	mock.ExpectBegin()
-	mock.ExpectExec(`UPDATE public."users"`).
-		WithArgs(request.Id, request.Fullname, sqlmock.AnyArg() /*request.Password*/, request.Username).
-		WillReturnResult(sqlmock.NewResult(0, 1))
-	mock.ExpectCommit()
+	t.Run("Positive Case", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec(`UPDATE public."users"`).
+			WithArgs(userUpdate.Id, userUpdate.Fullname, sqlmock.AnyArg() /*request.Password*/, userUpdate.Username).
+			WillReturnResult(sqlmock.NewResult(0, 1))
+		mock.ExpectCommit()
 
-	ctx := context.Background()
-	repositoryManager := repository.NewRepositoryManager()
-	serviceManager := service.NewServiceManager(repositoryManager, db)
-	resp, err := serviceManager.UserService().Update(ctx, request)
+		ctx := context.Background()
+		newRepository := userRepo.NewRepository()
+		newService := userService.NewService(newRepository, db)
+		resp, err2 := newService.Update(ctx, userUpdate)
 
-	fmt.Println(">>", err)
-	fmt.Println(">>", resp)
+		assert.Nil(t, err2)
+		assert.Equal(t, userUpdate.Id, resp.Id)
+		assert.Equal(t, userUpdate.Username, resp.Username)
+	})
+
+	t.Run("Negative Case", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec(`UPDATE public."users"`).
+			WithArgs(userUpdate.Id, userUpdate.Fullname, sqlmock.AnyArg() /*request.Password*/, userUpdate.Username).
+			WillReturnResult(sqlmock.NewResult(0, 0))
+		mock.ExpectRollback()
+
+		ctx := context.Background()
+		newRepository := userRepo.NewRepository()
+		newService := userService.NewService(newRepository, db)
+		resp, err2 := newService.Update(ctx, userUpdate)
+
+		assert.Error(t, err2)
+		assert.Nil(t, resp)
+	})
 
 	// we make sure that all expectations were met
 	if errMock := mock.ExpectationsWereMet(); errMock != nil {
 		t.Errorf("there were unfulfilled expectations: %s", errMock)
 	}
 
-	assert.NoError(t, err)
-	assert.Equal(t, request.Id, resp.Id)
-	assert.Equal(t, request.Username, resp.Username)
-}
-
-// negative case
-func TestServiceUpdateUser_Negative(t *testing.T) {
-
-	request := &model.User{
-		Id:       12,
-		Username: "pa ogah",
-		Fullname: "gope dulu",
-		Password: "gope dulu",
-	}
-
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer db.Close()
-
-	mock.ExpectBegin()
-	mock.ExpectExec(`UPDATE public."users"`).
-		WithArgs(request.Id, request.Fullname, sqlmock.AnyArg() /*request.Password*/, request.Username).
-		WillReturnResult(sqlmock.NewResult(0, 0))
-	mock.ExpectRollback()
-
-	ctx := context.Background()
-	repositoryManager := repository.NewRepositoryManager()
-	serviceManager := service.NewServiceManager(repositoryManager, db)
-	resp, err := serviceManager.UserService().Update(ctx, request)
-
-	// we make sure that all expectations were met
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
-	}
-
-	assert.Error(t, err)
-	assert.Nil(t, resp)
-
 }
 
 func TestGetAllUser(t *testing.T) {
 	ctx := context.Background()
-	users := []model.User{
+	users := []entity.User{
 		{Id: 1, Username: "user1", Fullname: "name1"},
 		{Id: 2, Username: "user2", Fullname: "name2"},
 	}
@@ -143,8 +118,8 @@ func TestGetAllUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	repositoryManager := repository.NewRepositoryManager()
-	serviceManager := service.NewServiceManager(repositoryManager, db)
+	newRepository := userRepo.NewRepository()
+	newService := userService.NewService(newRepository, db)
 
 	//positive case
 	//set expect data
@@ -158,7 +133,7 @@ func TestGetAllUser(t *testing.T) {
 		WillReturnRows(rows)
 	mock.ExpectCommit()
 
-	getALl, err := serviceManager.UserService().GetAll(ctx)
+	getALl, err := newService.GetAll(ctx)
 
 	// we make sure that all expectations were met
 	if errMock := mock.ExpectationsWereMet(); errMock != nil {
@@ -173,7 +148,7 @@ func TestGetAllUser(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows([]string{"user_id"}))
 	mock.ExpectRollback()
 
-	list, err := serviceManager.UserService().GetAll(ctx)
+	list, err := newService.GetAll(ctx)
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -187,7 +162,7 @@ func TestGetAllUser(t *testing.T) {
 func TestGetUserById(t *testing.T) {
 	ctx := context.Background()
 	id := 1
-	users := []model.User{
+	users := []entity.User{
 		{Id: 1, Username: "user1", Fullname: "name1"},
 	}
 
@@ -197,8 +172,8 @@ func TestGetUserById(t *testing.T) {
 	}
 	defer db.Close()
 
-	repositoryManager := repository.NewRepositoryManager()
-	serviceManager := service.NewServiceManager(repositoryManager, db)
+	newRepository := userRepo.NewRepository()
+	newService := userService.NewService(newRepository, db)
 
 	//positive case
 	//set expect data
@@ -213,7 +188,7 @@ func TestGetUserById(t *testing.T) {
 		WillReturnRows(rows)
 	mock.ExpectCommit()
 
-	user, err1 := serviceManager.UserService().GetById(ctx, id)
+	user, err1 := newService.GetById(ctx, id)
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -229,7 +204,7 @@ func TestGetUserById(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows([]string{"user_id"}))
 	mock.ExpectRollback()
 
-	list, err2 := serviceManager.UserService().GetAll(ctx)
+	list, err2 := newService.GetAll(ctx)
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -243,12 +218,12 @@ func TestGetUserById(t *testing.T) {
 func TestLogin(t *testing.T) {
 	ctx := context.Background()
 
-	request := web.UserCreateRequest{
+	userRequest := request.UserCreate{
 		Username: "user1",
 		Password: "user1",
 	}
 
-	users := []model.User{
+	users := []entity.User{
 		{Id: 1, Username: "user1", Fullname: "name1", Password: "$2a$10$5CSbYma21UNed8iAkhTnh.RDobwn5dYPflW/oQb/1sVSJPOv7M9Pe"},
 	}
 
@@ -258,8 +233,8 @@ func TestLogin(t *testing.T) {
 	}
 	defer db.Close()
 
-	repositoryManager := repository.NewRepositoryManager()
-	serviceManager := service.NewServiceManager(repositoryManager, db)
+	newRepository := userRepo.NewRepository()
+	newService := userService.NewService(newRepository, db)
 
 	//positive case
 	//set expect data
@@ -270,11 +245,11 @@ func TestLogin(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.password, u.creation_date from public."users" u`).
-		WithArgs(request.Username).
+		WithArgs(userRequest.Username).
 		WillReturnRows(rows)
 	mock.ExpectCommit()
 
-	login1, err1 := serviceManager.UserService().Login(ctx, &request)
+	login1, err1 := newService.Login(ctx, &userRequest)
 
 	// we make sure that all expectations were met
 	if errMock := mock.ExpectationsWereMet(); errMock != nil {
@@ -287,11 +262,11 @@ func TestLogin(t *testing.T) {
 	//negative case username not found
 	mock.ExpectBegin()
 	mock.ExpectQuery(`select u.user_id, u.username, u.fullname, u.password, u.creation_date from public."users" u`).
-		WithArgs(request.Username).
+		WithArgs(userRequest.Username).
 		WillReturnRows(sqlmock.NewRows([]string{"user_id"}))
 	mock.ExpectRollback()
 
-	login2, err2 := serviceManager.UserService().Login(ctx, &request)
+	login2, err2 := newService.Login(ctx, &userRequest)
 
 	// we make sure that all expectations were met
 	if errMock2 := mock.ExpectationsWereMet(); errMock2 != nil {
@@ -312,8 +287,8 @@ func TestDeleteUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	repositoryManager := repository.NewRepositoryManager()
-	serviceManager := service.NewServiceManager(repositoryManager, db)
+	newRepository := userRepo.NewRepository()
+	newService := userService.NewService(newRepository, db)
 
 	//positive case
 	mock.ExpectBegin()
@@ -322,7 +297,7 @@ func TestDeleteUser(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectCommit()
 
-	err1 := serviceManager.UserService().Remove(ctx, id)
+	err1 := newService.Remove(ctx, id)
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -337,7 +312,7 @@ func TestDeleteUser(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(0, 0))
 	mock.ExpectRollback()
 
-	err2 := serviceManager.UserService().Remove(ctx, id)
+	err2 := newService.Remove(ctx, id)
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {

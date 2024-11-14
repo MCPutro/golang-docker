@@ -2,8 +2,8 @@ package test
 
 import (
 	"encoding/json"
-	"github.com/MCPutro/golang-docker/internal/model/web"
 	"github.com/MCPutro/golang-docker/internal/util"
+	"github.com/MCPutro/golang-docker/internal/web/response"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
@@ -15,7 +15,7 @@ func TestWriteToResponseBody(t *testing.T) {
 	app := fiber.New()
 	ctx := app.AcquireCtx(&fasthttp.RequestCtx{})
 
-	dummyResponse := web.Response{
+	dummyResponse := response.Response{
 		Status:  200,
 		Message: "success",
 		Data:    "ok",

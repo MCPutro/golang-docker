@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/MCPutro/golang-docker/internal/model"
+	"github.com/MCPutro/golang-docker/internal/entity"
 	"github.com/MCPutro/golang-docker/internal/util"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
@@ -10,7 +10,7 @@ import (
 
 func TestGenerateToken(t *testing.T) {
 
-	user := model.User{
+	user := entity.User{
 		Id:       123569065,
 		Username: "2",
 		Fullname: "3",

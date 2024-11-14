@@ -1,6 +1,6 @@
-package web
+package request
 
-type UserCreateRequest struct {
+type UserCreate struct {
 	Username string `json:"username"`
 	Fullname string `json:"fullname"`
 	Password string `json:"password,omitempty"`

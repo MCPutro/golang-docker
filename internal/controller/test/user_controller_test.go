@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/MCPutro/golang-docker/internal/controller"
-	"github.com/MCPutro/golang-docker/internal/model"
-	"github.com/MCPutro/golang-docker/internal/repository/user"
+	"github.com/MCPutro/golang-docker/internal/entity"
+	userRepo "github.com/MCPutro/golang-docker/internal/repository/user"
 	"github.com/MCPutro/golang-docker/internal/routes"
-	user2 "github.com/MCPutro/golang-docker/internal/service/user"
+	userService "github.com/MCPutro/golang-docker/internal/service/user"
 	"github.com/MCPutro/golang-docker/internal/util"
+	"github.com/MCPutro/golang-docker/internal/util/logger"
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -25,13 +27,13 @@ var token string
 
 func setup(db *sql.DB) *fiber.App {
 
-	userRepository := user.NewUserRepository()
-	userService := user2.NewUserService(userRepository, db)
-	userController := controller.NewUserController(userService)
+	userRepository := userRepo.NewRepository()
+	service := userService.NewService(userRepository, db)
+	userController := controller.NewUserController(service)
 
 	router := routes.NewRouter(userController)
 
-	token, _ = util.GenerateToken(&model.User{
+	token, _ = util.GenerateToken(&entity.User{
 		Id:       0,
 		Username: "",
 	})
@@ -42,6 +44,10 @@ func setup(db *sql.DB) *fiber.App {
 }
 
 func Test_userController_Login(t *testing.T) {
+	//set logger
+	loggers := logger.NewLogger(logrus.DebugLevel)
+	loggers.Infoln("Application Starting")
+
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Errorf("error init sql mock, error : %s", err)
@@ -578,7 +584,7 @@ func Test_userController_DeleteUser(t *testing.T) {
 //
 //	router, mock := setupData()
 //	//mock data resp
-//	users := []model.User{
+//	users := []entity.User{
 //		{Id: 1, Username: "user1", Fullname: "name1", Password: "$2a$10$vzSUW9Zqo7O0UYrsSQE6LOs359dcuVPj6dlLPmOv4a4uwIQH5Ue0u"},
 //	}
 //	//set expect data

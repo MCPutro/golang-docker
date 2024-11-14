@@ -3,11 +3,11 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github.com/MCPutro/golang-docker/internal/model"
-	"github.com/MCPutro/golang-docker/internal/model/web"
+	user2 "github.com/MCPutro/golang-docker/internal/entity"
 	"github.com/MCPutro/golang-docker/internal/service/user"
 	"github.com/MCPutro/golang-docker/internal/util"
 	"github.com/MCPutro/golang-docker/internal/util/logger"
+	"github.com/MCPutro/golang-docker/internal/web/request"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
@@ -21,7 +21,7 @@ func NewUserController(service user.Service) UserController {
 }
 
 func (u *userControllerImpl) Login(c *fiber.Ctx) error {
-	body := new(web.UserCreateRequest)
+	body := new(request.UserCreate)
 
 	if err := c.BodyParser(&body); err != nil {
 		return util.WriteToResponseBody(c, fiber.StatusBadRequest, "invalid request body", nil)
@@ -47,7 +47,7 @@ func (u *userControllerImpl) Login(c *fiber.Ctx) error {
 }
 
 func (u *userControllerImpl) Registration(c *fiber.Ctx) error {
-	body := new(web.UserCreateRequest)
+	body := new(request.UserCreate)
 
 	if err := c.BodyParser(&body); err != nil {
 		return util.WriteToResponseBody(c, fiber.StatusBadRequest, "invalid request body", nil)
@@ -105,7 +105,7 @@ func (u *userControllerImpl) ShowUser(c *fiber.Ctx) error {
 }
 
 func (u *userControllerImpl) UpdateUser(c *fiber.Ctx) error {
-	body := new(model.User)
+	body := new(user2.User)
 
 	if err := c.BodyParser(&body); err != nil {
 		return util.WriteToResponseBody(c, fiber.StatusBadRequest, "invalid request body", nil)
