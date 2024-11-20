@@ -16,6 +16,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  migrate:
+    container_name: migrate-docker
+    image: migrate/migrate:latest
+    command: [
+      "-path", "/migrations",
+      "-database", "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_DB_PORT}/${POSTGRES_DB}?sslmode=disable",
+      "up"
+    ]
+    volumes:
+      - ./migrations:/migrations
+    depends_on:
+      db :
+        condition: service_healthy
   backend:
     build:
       context: .
