@@ -19,7 +19,7 @@ var (
 func NewLogger(level logrus.Level) *logrus.Logger {
 	loggerInit.Do(func() {
 		//check directory is existing
-		logFilePath := "/app/logs"
+		logFilePath := "logs"
 		if _, err := os.Stat(logFilePath); os.IsNotExist(err) {
 			// Directory does not exist, create it
 			err := os.MkdirAll(logFilePath, 0755) // 0755 sets permissions (read/write for owner, read-only for others)
